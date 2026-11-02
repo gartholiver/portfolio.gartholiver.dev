@@ -1,0 +1,132 @@
+.fileHeader {
+  display: flex;
+  align-items: stretch;
+  flex: none;
+  height: var(--size-fileheader);
+  min-width: 0;
+  background: var(--color-surface-0);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 12px;
+}
+
+/* Tab-like cell for the open file: matches the content surface so it reads as "open". */
+.file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 60%;
+  padding: 10px 18px;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  box-shadow: inset 0 2px 0 var(--color-accent);
+  color: var(--color-text-strong);
+  white-space: nowrap;
+}
+
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--color-filetype-folder);
+}
+.dot[data-kind="md"] {
+  background: var(--color-filetype-md);
+}
+.dot[data-kind="html"] {
+  background: var(--color-filetype-html);
+}
+.dot[data-kind="json"] {
+  background: var(--color-filetype-json);
+}
+.dot[data-kind="tsx"] {
+  background: var(--color-filetype-tsx);
+}
+.dot[data-kind="bash"] {
+  background: var(--color-filetype-bash);
+}
+.dot[data-kind="default"] {
+  background: var(--color-text-muted);
+}
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 16px;
+}
+
+.crumbList {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.crumb {
+  display: inline-flex;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.crumb[data-last="true"] {
+  flex-shrink: 0;
+  max-width: 100%;
+}
+.crumb + .crumb::before {
+  content: "›" / "";
+  flex: none;
+  margin: 0 8px;
+}
+.crumb[data-last="true"] .crumbLink,
+.crumb[data-last="true"] .crumbText {
+  color: var(--color-text-strong);
+}
+
+.crumbLink,
+.crumbText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.crumbLink {
+  color: inherit;
+  text-decoration: none;
+}
+.crumbLink:hover {
+  color: var(--color-text-strong);
+  text-decoration: underline;
+}
+
+@media (max-width: 599.98px) {
+  .file {
+    padding: 10px 12px;
+  }
+  .crumbs {
+    padding: 0 12px;
+  }
+  /* The file cell already shows the filename: keep the last crumb for assistive tech only. */
+  .crumb[data-last="true"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .crumb[data-last="true"]::before {
+    content: none;
+  }
+}

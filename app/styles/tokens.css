@@ -1,19 +1,95 @@
 /*
- * Shared design tokens. PLACEHOLDER values — the real palette/typography is being extracted from
- * .claude/docs/design/prototype.html and will replace these. Reference tokens from CSS Modules via var().
+ * Shared design tokens, extracted from the prototype (.claude/docs/design/prototype-spec.md §8).
+ * Reference them from CSS Modules via var(). Hover/focus/transition values marked "proposed" in the
+ * spec are included here too.
  */
 :root {
-  --color-bg: #1e1f22;
-  --color-surface: #2b2d30;
-  --color-border: #3c3f41;
-  --color-text: #dfe1e5;
-  --color-text-muted: #9da0a8;
-  --color-accent: #3574f0;
+  color-scheme: dark;
 
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* surfaces */
+  --color-bg: #14161b;
+  --color-surface-0: #101216; /* chrome: title bar, file header, terminal */
+  --color-surface-1: #181b21; /* explorer */
+  --color-surface-2: #1a1d24; /* content */
+  --color-surface-3: #20242c; /* raised: metadata bar, table header */
+  --color-surface-selected: #2a3140;
+  --color-surface-hover: rgba(255, 255, 255, 0.04);
+  --color-callout-info-bg: #1f2a3a;
 
-  --explorer-width: 280px;
-  --terminal-height: 210px;
+  /* borders */
+  --color-border: #262a33;
+  --color-border-content: #2c313c;
+
+  /* text */
+  --color-text-strong: #ffffff;
+  --color-text: #d4d7de;
+  --color-text-explorer: #c2c7d2;
+  --color-text-muted: #8b93a3;
+  --color-text-faint: #808899; /* AA-safe replacement for the prototype's #5d6575 (2.9:1) */
+  --color-icon-folder: #5d6575; /* non-text use only */
+
+  /* accents */
+  --color-accent: #7cc4ff;
+  --color-accent-hover: #b3dcff;
+  --color-accent-status: #2b6cb0;
+  --color-focus: var(--color-accent);
+  --color-focus-on-accent: #ffffff;
+
+  /* syntax / file types */
+  --color-syntax-key: #5fc7b8;
+  --color-syntax-string: #e5b567;
+  --color-filetype-folder: #5d6575;
+  --color-filetype-md: #7cc4ff;
+  --color-filetype-html: #f0a064;
+  --color-filetype-json: #e5b567;
+  --color-filetype-tsx: #5fc7b8;
+  --color-filetype-bash: #7fe0c4;
+
+  /* status */
+  --color-success: #7fe0c4;
+  --color-success-bg: #1f3a33;
+  --color-error: #ff8a8a;
+  --color-warning: #e5b567;
+
+  /* demo panel (light) */
+  --color-demo-bg: #ffffff;
+  --color-demo-text: #1d2330;
+  --color-demo-text-muted: #566074;
+  --color-demo-border: #e4e7ee;
+  --color-demo-open-bg: #eef7f1;
+  --color-demo-open-fg: #2d6a4a;
+  --color-demo-booked-bg: #dfe9fb;
+  --color-demo-booked-fg: #274a8f;
+  --shadow-demo-panel: 0 12px 40px rgba(0, 0, 0, 0.4);
+
+  /* type */
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: "Inter Variable", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* layout */
+  --size-titlebar: 37px; /* 36 + 1px border */
+  --size-explorer: 280px;
+  --size-explorer-drawer: min(300px, 88vw);
+  --size-fileheader: 37px; /* matches the prototype tab strip */
+  --size-terminal: 210px;
+  --size-terminal-header: 34px;
+  --size-statusbar: 24px;
+  --explorer-indent: 14px; /* per level; base padding-left 12px */
   --breakpoint-drawer: 900px; /* documentation only: CSS can't use vars in media queries */
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-pill: 99px;
+
+  /* motion */
+  --duration-fast: 120ms;
+  --duration-medium: 200ms;
+  --ease: ease;
+
+  /* stacking */
+  --z-skip-link: 100;
+  --z-drawer: 40;
+  --z-backdrop: 30;
 }

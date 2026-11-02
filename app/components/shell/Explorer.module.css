@@ -1,0 +1,163 @@
+.explorer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 12px 0;
+  background: var(--color-surface-1);
+  color: var(--color-text-explorer);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  min-height: 24px;
+  padding: 0 16px 8px;
+}
+
+.heading {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.close {
+  display: none; /* drawer layout only */
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: -6px -8px -6px 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.close:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-strong);
+}
+@media (max-width: 899.98px) {
+  .close {
+    display: inline-flex;
+  }
+}
+
+.nav {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.list[hidden] {
+  display: none;
+}
+
+.item {
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  --level: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 26px;
+  margin: 0;
+  padding: 4px 12px 4px calc(12px + var(--level) * var(--explorer-indent));
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-text-explorer);
+  font: inherit;
+  line-height: 17px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+}
+.row:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-strong);
+}
+.row:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+}
+.row[aria-current="page"] {
+  background: var(--color-surface-selected);
+  color: var(--color-text-strong);
+  box-shadow: inset 2px 0 0 var(--color-accent);
+}
+
+@media (max-width: 899.98px) {
+  .row {
+    min-height: 32px;
+  }
+}
+
+.chevronSlot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 10px;
+  color: var(--color-text-muted);
+}
+
+.chevron {
+  transition: transform 150ms var(--ease);
+}
+.chevron[data-expanded="true"] {
+  transform: rotate(90deg);
+}
+
+.dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--color-filetype-folder);
+}
+.dot[data-kind="md"] {
+  background: var(--color-filetype-md);
+}
+.dot[data-kind="html"] {
+  background: var(--color-filetype-html);
+}
+.dot[data-kind="json"] {
+  background: var(--color-filetype-json);
+}
+.dot[data-kind="tsx"] {
+  background: var(--color-filetype-tsx);
+}
+.dot[data-kind="bash"] {
+  background: var(--color-filetype-bash);
+}
+.dot[data-kind="default"] {
+  background: var(--color-text-muted);
+}
+
+/* Long filenames wrap instead of truncating, so they stay readable. */
+.label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

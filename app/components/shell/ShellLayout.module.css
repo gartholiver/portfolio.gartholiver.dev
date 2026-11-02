@@ -1,0 +1,55 @@
+/* The page is pinned to the viewport; only the explorer, content and terminal scroll internally. */
+.shell {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
+  height: 100vh; /* fallback */
+  height: 100dvh;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.titleRow,
+.statusRow {
+  min-width: 0;
+}
+
+.body {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  background: var(--color-surface-2);
+}
+
+.skipLink {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: var(--z-skip-link);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: #0b0d11;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.skipLink:focus {
+  transform: none;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}

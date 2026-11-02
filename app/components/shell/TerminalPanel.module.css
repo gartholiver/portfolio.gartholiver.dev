@@ -1,0 +1,100 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  min-height: 0;
+  background: var(--color-surface-0);
+  border-top: 1px solid var(--color-border);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-text);
+}
+.panel[data-open="true"] {
+  height: var(--size-terminal);
+}
+.panel[data-open="false"] {
+  height: auto;
+}
+
+.heading {
+  flex: none;
+  margin: 0;
+  font: inherit;
+  border-bottom: 1px solid var(--color-border);
+}
+.panel[data-open="false"] .heading {
+  border-bottom: 0;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: var(--size-terminal-header);
+  margin: 0;
+  padding: 8px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease);
+}
+.toggle:hover {
+  color: var(--color-text-strong);
+}
+.toggle:focus-visible {
+  outline-offset: -2px;
+}
+
+.chevron {
+  flex: none;
+  transition: transform 150ms var(--ease);
+}
+.panel[data-open="false"] .chevron {
+  transform: rotate(-90deg);
+}
+
+.body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 10px 16px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  line-height: 1.7;
+}
+.body:focus-visible {
+  outline-offset: -2px;
+}
+.body[hidden] {
+  display: none;
+}
+
+/*
+ * Below the drawer breakpoint the terminal starts collapsed. Before the user makes a choice this
+ * is handled in CSS so the prerendered (desktop-state) HTML doesn't flash open on phones; after
+ * hydration the state matches (aria-expanded=false, body hidden).
+ */
+@media (max-width: 899.98px) {
+  .panel[data-open="true"] {
+    height: min(var(--size-terminal), 45dvh);
+  }
+  .panel[data-default="true"][data-open="true"] {
+    height: auto;
+  }
+  .panel[data-default="true"][data-open="true"] .body {
+    display: none;
+  }
+  .panel[data-default="true"][data-open="true"] .heading {
+    border-bottom: 0;
+  }
+  .panel[data-default="true"][data-open="true"] .chevron {
+    transform: rotate(-90deg);
+  }
+}
