@@ -9,7 +9,7 @@ Editor-styled portfolio. React Router v8 Framework Mode + Vite + TypeScript, ful
 - `npm run typecheck` — `react-router typegen && tsc`
 - `npm test` — Vitest (unit; `app/**/*.test.ts(x)`, node env; add `// @vitest-environment jsdom` for DOM tests)
 - `npm run test:e2e` — builds, then Playwright against the static build (`e2e/`)
-- `npm run preview` / `npm start` — serve `build/client` on :4173 (404.html → 404 status, like Netlify)
+- `npm run preview` / `npm start` — serve `build/client` on :4173 (404.html → 404 status and no directory listings, like Netlify; config in `serve.json`)
 
 ## Structure
 

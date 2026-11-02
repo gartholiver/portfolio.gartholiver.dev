@@ -20,15 +20,21 @@ import { listMarkdownFiles } from "./markdown.server";
 function toRouteObjects(config: RouteConfigEntry[]): RouteObject[] {
   return config.map((r) => ({
     id: r.id ?? r.file,
+    handle: { file: r.file },
     path: r.path,
     index: r.index,
     children: r.children ? toRouteObjects(r.children) : undefined,
   })) as RouteObject[];
 }
 
+function leafRoute(pathname: string): { id: string; file: string } | undefined {
+  const route = matchRoutes(toRouteObjects(routeConfig), pathname)?.at(-1)?.route;
+  return route ? { id: route.id as string, file: (route.handle as { file: string }).file } : undefined;
+}
+
+/** The route module file a pathname resolves to. */
 function leafFile(pathname: string): string | undefined {
-  const matches = matchRoutes(toRouteObjects(routeConfig), pathname);
-  return (matches?.at(-1)?.route.id as string | undefined) ?? undefined;
+  return leafRoute(pathname)?.file;
 }
 
 describe("content registry", () => {
@@ -85,7 +91,7 @@ describe("content registry", () => {
   it("routes every non-action entry to the right route module", () => {
     const expected: Record<string, string> = {
       home: "routes/home.tsx",
-      markdown: "", // id-based, checked below
+      markdown: "routes/markdown-doc.tsx",
       view: "routes/view.tsx",
       demo: "routes/view.tsx",
       about: "routes/about.tsx",
@@ -97,15 +103,34 @@ describe("content registry", () => {
       const leaf = leafFile(entry.url);
       expect(leaf, entry.url).toBeDefined();
       expect(leaf, entry.url).not.toBe("routes/not-found.tsx");
+      expect(leaf, entry.url).toBe(expected[entry.kind]);
       if (entry.kind === "markdown") {
-        expect(leaf).toBe(entry.content.type === "markdown" && entry.content.docType === "readme"
-          ? "project-readme"
-          : "project-technical-requirements");
-      } else {
-        expect(leaf, entry.url).toBe(expected[entry.kind]);
+        expect(leafRoute(entry.url)?.id).toBe(
+          `${entry.content.type === "markdown" && entry.content.docType === "readme" ? "project-readme" : "project-technical-requirements"}:${entry.projectId}`,
+        );
       }
     }
     expect(leafFile("/definitely/not/a/page")).toBe("routes/not-found.tsx");
+  });
+
+  it("sends unknown URLs under known path shapes to the catch-all, not to a content route", () => {
+    for (const pathname of [
+      "/portfolio",
+      "/portfolio/typo",
+      "/portfolio/typo/technical-requirements",
+      "/portfolio/hybrid-wp-react-intranet/views/typo",
+      "/portfolio/typo/views/office-booking-calendar",
+      "/portfolio/hybrid-wp-react-intranet/views",
+      "/docs/contact",
+      "/docs/about/extra",
+    ]) {
+      expect(leafFile(pathname), pathname).toBe("routes/not-found.tsx");
+    }
+  });
+
+  it("has exactly one route per registry URL (no two entries share a route id)", () => {
+    const ids = routeEntries.map((e) => leafRoute(e.url)?.id);
+    expect(new Set(ids).size).toBe(routeEntries.length);
   });
 
   it("prerenders exactly the routable entries", () => {

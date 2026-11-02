@@ -25,10 +25,9 @@ import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import { SKIP, visit } from "unist-util-visit";
-import { toString as mdastToString } from "mdast-util-to-string";
 import { toString as hastToString } from "hast-util-to-string";
 import { parse as parseYaml } from "yaml";
-import type { Root as MdastRoot, Blockquote, Paragraph, Text } from "mdast";
+import type { Root as MdastRoot, Blockquote, Paragraph, Text, Nodes as MdastNodes } from "mdast";
 import type { Element as HastElement, Root as HastRoot } from "hast";
 
 export const CALLOUT_TYPES = ["note", "info", "tip", "warning", "placeholder"] as const;
@@ -158,6 +157,24 @@ function rehypeEnhance() {
   };
 }
 
+/** Containers whose children are block-level nodes or table rows/cells: their text must not run together. */
+const SEPARATING_PARENTS = new Set(["root", "blockquote", "list", "listItem", "table", "tableRow"]);
+
+/**
+ * Plain text of an mdast tree for search snippets. Unlike `mdast-util-to-string` (which concatenates
+ * everything), block-level siblings, list items and table cells are separated by a space, so
+ * "| File | Title |" yields "File Title" rather than "FileTitle". Inline phrasing joins without a gap.
+ */
+export function mdastPlainText(node: MdastNodes): string {
+  if (node.type === "text" || node.type === "inlineCode" || node.type === "code") return node.value;
+  if (node.type === "image") return node.alt ?? "";
+  if (node.type === "break" || node.type === "thematicBreak") return " ";
+  if (!("children" in node)) return "";
+  const parts = (node.children as MdastNodes[]).map(mdastPlainText);
+  // Paragraphs, headings and table cells hold phrasing content; every other container holds blocks.
+  return parts.join(SEPARATING_PARENTS.has(node.type) ? " " : "");
+}
+
 export function renderMarkdown(source: string): RenderedMarkdown {
   const { data, body } = splitFrontmatter(source);
   const toc: TocItem[] = [];
@@ -172,7 +189,7 @@ export function renderMarkdown(source: string): RenderedMarkdown {
     .use(rehypeStringify);
 
   const mdast = processor.parse(body);
-  const text = mdastToString(mdast)
+  const text = mdastPlainText(mdast)
     .replace(/\[![a-z]+\]/gi, "")
     .replace(/\s+/g, " ")
     .trim();

@@ -41,7 +41,8 @@ export function MarkdownContent({ html, className }: { html: string; className?:
 
   return (
     <div
-      className={className}
+      // `md-content` scopes the global document defaults (tables) in app/styles/global.css.
+      className={className ? `md-content ${className}` : "md-content"}
       onClick={onClick}
       // Trusted: rendered at build time from local Markdown; raw HTML in Markdown is dropped.
       dangerouslySetInnerHTML={{ __html: html }}

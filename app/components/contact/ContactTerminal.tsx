@@ -11,6 +11,7 @@ import {
   type ContactField,
   type ContactState,
 } from "./contact-flow";
+import { withRepeatMarker } from "~/lib/announce";
 import { contactStore } from "./contact-store";
 import styles from "./ContactTerminal.module.css";
 
@@ -139,8 +140,7 @@ export function ContactTerminal() {
 
       {/* Polite live region: step changes, validation errors, restart. */}
       <div className="sr-only" role="status" aria-live="polite" aria-atomic="true" data-contact-live>
-        {state.announcement}
-        {state.announcementSeq % 2 === 1 ? "​" : ""}
+        {withRepeatMarker(state.announcement, state.announcementSeq)}
       </div>
     </div>
   );

@@ -41,8 +41,9 @@
   font: inherit;
   cursor: pointer;
 }
+/* Hover darkens (white on a lightened blue is only 3.9:1; on this it stays above 7:1). */
 .toggle:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.28);
 }
 .toggle:focus-visible,
 .statusBar :focus-visible {

@@ -1,4 +1,4 @@
-import { useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import {
   DAYS,
   DESKS,
@@ -15,6 +15,7 @@ import {
   yourReservations,
   type BookingState,
 } from "./booking";
+import { useRepeatableAnnouncement } from "~/lib/announce";
 import { bookingStore } from "./store";
 import styles from "./OfficeBookingCalendar.module.css";
 
@@ -32,7 +33,7 @@ function useBookingState(): BookingState {
  */
 export function OfficeBookingCalendar() {
   const state = useBookingState();
-  const [message, setMessage] = useState("");
+  const [message, announce] = useRepeatableAnnouncement();
   const mine = yourReservations(state).length;
 
   return (
@@ -52,7 +53,7 @@ export function OfficeBookingCalendar() {
           className={styles.reset}
           onClick={() => {
             bookingStore.reset();
-            setMessage(RESET_ANNOUNCEMENT);
+            announce(RESET_ANNOUNCEMENT);
           }}
         >
           Reset demo
@@ -143,7 +144,7 @@ export function OfficeBookingCalendar() {
                                 : `Reserve ${desk.name} on ${day.longLabel}`
                           }
                           onClick={() =>
-                            setMessage(
+                            announce(
                               isYours
                                 ? describeCancel(
                                     bookingStore.cancel(desk.id, day.id),

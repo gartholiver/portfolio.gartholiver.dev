@@ -1,7 +1,19 @@
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigationType } from "react-router";
 import { useShell } from "./ShellContext";
 import styles from "./ContentPanel.module.css";
+
+/** The element a URL fragment points at (decoded), if it exists on the page. */
+function getHashTarget(hash: string): HTMLElement | null {
+  if (!hash) return null;
+  let id = hash.slice(1);
+  try {
+    id = decodeURIComponent(id);
+  } catch {
+    // keep raw
+  }
+  return document.getElementById(id);
+}
 
 /**
  * The scrolling content panel (<main>). It — not the window — is the scroll container, so the
@@ -10,7 +22,8 @@ import styles from "./ContentPanel.module.css";
  *  - back/forward (POP) → restore the position remembered (in memory only) for that history entry,
  *  - otherwise → reset to the top.
  * Native in-page anchor clicks (`<a href="#x">`) are handled by the browser, which scrolls the
- * nearest scrollable ancestor.
+ * nearest scrollable ancestor. Moving back/forward between such fragment-only history entries does
+ * not scroll a nested scroller, so a `hashchange` listener scrolls the new target into view.
  */
 export function ContentPanel() {
   const { contentRef } = useShell();
@@ -24,23 +37,25 @@ export function ContentPanel() {
     const el = contentRef.current;
     if (!el) return;
 
-    if (location.hash) {
-      let id = location.hash.slice(1);
-      try {
-        id = decodeURIComponent(id);
-      } catch {
-        // keep raw
-      }
-      const target = document.getElementById(id);
-      if (target) {
-        target.scrollIntoView();
-        return;
-      }
+    const target = getHashTarget(location.hash);
+    if (target) {
+      target.scrollIntoView();
+      return;
     }
     el.scrollTop = navigationType === "POP" ? (positions.current.get(location.key) ?? 0) : 0;
     el.scrollLeft = 0;
     // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the history entry only
   }, [location.key]);
+
+  useEffect(() => {
+    function onHashChange() {
+      const target = getHashTarget(window.location.hash);
+      if (target) target.scrollIntoView();
+      else if (!window.location.hash && contentRef.current) contentRef.current.scrollTop = 0;
+    }
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, [contentRef]);
 
   return (
     <main

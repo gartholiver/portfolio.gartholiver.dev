@@ -137,6 +137,34 @@ test.describe("Markdown documents (desktop)", () => {
     await expect(content(page).getByRole("region", { name: /^Table:/ }).getByRole("columnheader", { name: "Requirement" })).toBeVisible();
   });
 
+  test("table defaults belong to Markdown content: document tables are styled, demo tables start clean", async ({
+    page,
+  }) => {
+    const cellStyle = (selector: string) =>
+      page.locator(selector).first().evaluate((el) => {
+        const cs = getComputedStyle(el);
+        return { background: cs.backgroundColor, borderTop: cs.borderTopWidth };
+      });
+
+    await page.goto(TECH);
+    await expect(page.locator(".md-content table").first()).toBeVisible();
+    const markdownHeader = await cellStyle(".md-content th");
+    expect(markdownHeader.background).toBe("rgb(32, 36, 44)"); // --color-surface-3
+    const markdownCell = await cellStyle(".md-content tbody td");
+    expect(markdownCell.borderTop).toBe("1px");
+
+    await page.goto(DEMO);
+    const demoTable = page.locator('[data-demo] table');
+    await expect(demoTable).toBeVisible();
+    expect(await demoTable.evaluate((el) => getComputedStyle(el).display)).toBe("table");
+    expect(await page.locator(".md-content").count()).toBe(0);
+    for (const selector of ["[data-demo] thead th", "[data-demo] tbody th", "[data-demo] td"]) {
+      const style = await cellStyle(selector);
+      expect(style.borderTop, selector).toBe("0px");
+      expect(style.background, selector).not.toBe("rgb(32, 36, 44)");
+    }
+  });
+
   test("prerendered HTML contains the document text without JavaScript", async ({ request }) => {
     for (const [url, text, id] of [
       [HYBRID, "A short, anonymised description of what this project is and who it serves.", "overview"],

@@ -48,6 +48,44 @@ status: placeholder
     expect(text).not.toContain("[!warning]");
   });
 
+  it("separates blocks, list items and table cells with whitespace in the plain text", () => {
+    const { text } = renderMarkdown(`# Title
+
+Intro paragraph.
+
+## Files
+
+| File | Title | Type |
+| - | - | - |
+| lms-scorm-integration.html | LMS / SCORM | Placeholder |
+| \`second.html\` | **Bold** cell | Other |
+
+- first item
+- second item
+
+> [!tip] Callout title
+> Callout body.
+
+Line one  
+line *two* ends.
+`);
+    expect(text).toContain("Title Intro paragraph. Files");
+    expect(text).toContain("File Title Type lms-scorm-integration.html LMS / SCORM Placeholder second.html Bold cell Other");
+    expect(text).toContain("first item second item");
+    expect(text).toContain("Callout title Callout body.");
+    expect(text).toContain("line two ends."); // inline emphasis does not introduce gaps
+    expect(text).not.toMatch(/FileTitle|TypeUnder|itemsecond|\s{2,}/);
+  });
+
+  it("produces readable, space-separated text for every real document", () => {
+    for (const entry of routeEntries) {
+      if (entry.content.type !== "markdown") continue;
+      const { text } = loadMarkdown(entry.content.file);
+      expect(text, entry.id).not.toMatch(/[a-z]\.html[A-Z]|[a-z]\.html[a-z]+\.html/);
+      expect(text, entry.id).not.toMatch(/\s{2,}/);
+    }
+  });
+
   it("adds decorative heading permalinks without polluting TOC text", () => {
     const doc = renderMarkdown(sample);
     expect(doc.html).toContain('<a class="heading-anchor" href="#sub-section" aria-hidden="true" tabindex="-1">#</a>');

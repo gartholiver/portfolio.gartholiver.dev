@@ -1,5 +1,8 @@
 /* The page is pinned to the viewport; only the explorer, content and terminal scroll internally. */
 .shell {
+  /* Containing block for absolutely positioned descendants (.sr-only text etc.): without it they
+     escape the overflow clip below and make the window itself scrollable. */
+  position: relative;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-columns: minmax(0, 1fr);

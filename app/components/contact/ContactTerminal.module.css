@@ -219,3 +219,18 @@ textarea.input {
     transition: none;
   }
 }
+
+/* Short viewports (on-screen keyboard open): tighten vertical spacing so the field, its error and
+   the buttons fit in the small terminal body together. */
+@media (max-height: 480px) {
+  .step {
+    margin-top: 2px;
+  }
+  .actions {
+    margin: 4px 0 0;
+  }
+  .hint,
+  .error {
+    margin-top: 0;
+  }
+}

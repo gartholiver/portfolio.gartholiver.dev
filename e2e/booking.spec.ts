@@ -202,6 +202,49 @@ test.describe("office booking calendar", () => {
     await expect(reserveB1Tue(page)).toBeVisible();
   });
 
+  test("announcements repeat: pressing Reset demo twice changes the live-region text each time", async ({
+    page,
+  }) => {
+    await page.goto(DEMO);
+    const reset = main(page).getByRole("button", { name: "Reset demo" });
+    const raw = () => status(page).evaluate((el) => el.textContent ?? "");
+    const spoken = (text: string) => text.replace(/\u200b/g, "");
+
+    await reset.click();
+    const first = await raw();
+    await reset.click();
+    const second = await raw();
+    await reset.click();
+    const third = await raw();
+    expect([first, second, third].map(spoken)).toEqual(
+      Array(3).fill("Demo reset. The sample reservations were restored."),
+    );
+    expect(second).not.toBe(first);
+    expect(third).not.toBe(second);
+  });
+
+  test("a reservation by someone else can never be taken, moved or cancelled", async ({
+    page,
+  }) => {
+    await page.goto(DEMO);
+    const a2Monday = table(page)
+      .getByRole("row", { name: /^Desk A2/ })
+      .getByRole("cell")
+      .first();
+    await expect(a2Monday).toContainText("A. Rivera");
+    await expect(a2Monday.getByRole("button")).toHaveCount(0);
+    // having your own booking that day does not unlock it either (it becomes "Move here" only on free desks)
+    await main(page)
+      .getByRole("button", { name: "Reserve Desk A1 on Monday 2 November" })
+      .click();
+    await expect(a2Monday.getByRole("button")).toHaveCount(0);
+    await expect(a2Monday).toContainText("A. Rivera");
+    await expect(summary(page)).toHaveText("You have 1 reservation this week");
+    await expect(
+      main(page).getByRole("button", { name: /^(Reserve|Cancel|Move here).*Desk A2 on Monday/ }),
+    ).toHaveCount(0);
+  });
+
   test("keyboard-only: tab to a cell, reserve with Enter, cancel with Space", async ({
     page,
   }) => {
