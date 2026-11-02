@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "build/client"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+# Phase 1 ships placeholder content: keep every response out of search indexes.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+# Unknown URLs: Netlify serves build/client/404.html with a 404 status automatically.
+# Do NOT add a `/* /index.html 200` (or __spa-fallback.html) rewrite — it would turn 404s into 200s.

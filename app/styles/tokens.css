@@ -1,0 +1,19 @@
+/*
+ * Shared design tokens. PLACEHOLDER values — the real palette/typography is being extracted from
+ * .claude/docs/design/prototype.html and will replace these. Reference tokens from CSS Modules via var().
+ */
+:root {
+  --color-bg: #1e1f22;
+  --color-surface: #2b2d30;
+  --color-border: #3c3f41;
+  --color-text: #dfe1e5;
+  --color-text-muted: #9da0a8;
+  --color-accent: #3574f0;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --explorer-width: 280px;
+  --terminal-height: 210px;
+  --breakpoint-drawer: 900px; /* documentation only: CSS can't use vars in media queries */
+}
