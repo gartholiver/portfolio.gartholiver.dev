@@ -10,6 +10,7 @@
  * heavy.) The demo only renders the panel body — the frame supplies the title and labels.
  */
 import type { ComponentType } from "react";
+import { FLOOR_LABEL, WEEK_LABEL } from "~/fixtures/office-booking-calendar";
 import OfficeBookingCalendar from "./office-booking-calendar";
 
 export interface DemoDefinition {
@@ -24,7 +25,8 @@ export interface DemoDefinition {
 const demoDefinitions = {
   "office-booking-calendar": {
     component: OfficeBookingCalendar,
-    description: "Interactive example with fictional records",
+    meta: `${WEEK_LABEL} · ${FLOOR_LABEL}`,
+    description: "Interactive example with fictional reservations; nothing is saved",
   },
 } satisfies Record<string, DemoDefinition>;
 

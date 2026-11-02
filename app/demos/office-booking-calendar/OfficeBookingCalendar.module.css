@@ -1,12 +1,270 @@
-.placeholder {
-  padding: 24px;
-  border: 1px dashed #9aa3b5;
-  border-radius: var(--radius-lg);
-  background: #f6f7fa;
+/*
+ * Light application panel contents (prototype-spec §5.3). Colours come from the demo tokens in
+ * app/styles/tokens.css plus a few panel-local values; every text pair is checked for WCAG AA:
+ *   #2d6a4a on #eef7f1 5.9:1 · #274a8f on #dfe9fb 7.0:1 · #ffffff on #2b6cb0 5.2:1 ·
+ *   #1f4f8a on #ffffff 8.3:1 · #566074 on #ffffff 6.3:1
+ * Focus rings come from the panel (`.panel :focus-visible`); on the solid-blue "yours" cell they are
+ * overridden below so they stay visible.
+ */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
 }
-.text {
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.note,
+.rule {
   margin: 0;
-  color: var(--color-demo-text);
+  color: var(--color-demo-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+.summary {
+  margin: 0;
   font-size: 15px;
-  line-height: 1.7;
+  color: var(--color-demo-text);
+}
+.summary strong {
+  font-weight: 700;
+}
+
+.reset {
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 1px solid #6b7385; /* 4.8:1 on white */
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  color: var(--color-demo-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.reset:hover {
+  background: #eef0f5;
+}
+
+.status {
+  min-height: 1.6em; /* reserve the line so announcements don't shift the table */
+  margin: -4px 0 0;
+  color: var(--color-demo-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* The table scrolls inside this region on narrow screens; the page itself never scrolls sideways. */
+.scroller {
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 6px; /* keeps the scrollbar clear of the last row */
+  border-radius: var(--radius-md);
+}
+
+/* The shell's global `main table/th/td` styles (display:block, grey header fill, row borders) are for
+   Markdown tables; reset every property they set so this grid is a plain table. */
+.table {
+  display: table;
+  width: 100%;
+  max-width: none;
+  min-width: 560px;
+  margin: 0;
+  overflow: visible;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 13px;
+}
+
+.corner,
+.deskHeader {
+  width: 78px;
+}
+.dayHeader {
+  padding: 0 3px 6px;
+  border: 0;
+  background: transparent;
+  color: var(--color-demo-text-muted);
+  font-weight: 700;
+  text-align: center;
+}
+.dayName,
+.dayDate {
+  display: block;
+}
+.dayDate {
+  font-size: 12px;
+  font-weight: 400;
+}
+.deskHeader {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  padding: 0 8px 0 0;
+  border: 0;
+  background: var(--color-demo-bg);
+  color: var(--color-demo-text-muted);
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+.corner {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  background: var(--color-demo-bg);
+}
+
+.td {
+  padding: 3px;
+  border: 0;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 4px;
+  min-height: 52px;
+  padding: 4px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+.cellStatus {
+  font-size: 12px;
+  font-weight: 700;
+}
+.cellName {
+  font-size: 13px;
+}
+
+.available {
+  background: var(--color-demo-open-bg);
+  color: var(--color-demo-open-fg);
+}
+.others {
+  background: var(--color-demo-booked-bg);
+  color: var(--color-demo-booked-fg);
+}
+.yours {
+  background: #2b6cb0;
+  color: #ffffff;
+}
+
+.action {
+  flex: 1;
+  min-height: 40px;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.available .action {
+  border: 1px solid var(--color-demo-open-fg);
+  background: transparent;
+  color: var(--color-demo-open-fg);
+}
+.available .action:hover {
+  background: #dcefe3;
+}
+.yours .action {
+  flex: none;
+  min-height: 32px;
+  border: 1px solid #ffffff;
+  background: #ffffff;
+  color: #1f4f8a;
+}
+.yours .action:hover {
+  background: #e6f0fb;
+}
+/* Keep the focus ring visible on the solid-blue cell: white inner ring + dark outer ring. */
+.yours .action:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 0;
+  box-shadow: 0 0 0 4px #1d2330;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-demo-text);
+  font-size: 13px;
+}
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.swatch {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-sm);
+}
+.swatchAvailable {
+  border: 1px solid var(--color-demo-open-fg);
+  background: var(--color-demo-open-bg);
+}
+.swatchYours {
+  background: #2b6cb0;
+}
+.swatchOthers {
+  background: var(--color-demo-booked-bg);
+  border: 1px solid var(--color-demo-booked-fg);
+}
+
+@media (max-width: 599.98px) {
+  .corner,
+  .deskHeader {
+    width: 64px;
+  }
+  .deskHeader {
+    padding-right: 4px;
+    font-size: 12px;
+  }
+  .table {
+    min-width: 520px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reset,
+  .cell,
+  .action {
+    transition: none;
+  }
 }
