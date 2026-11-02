@@ -9,6 +9,7 @@ import styles from "./HomePage.module.css";
 export function HomePage() {
   const { openContact } = useShell();
   const demo = routeEntries.find((e) => e.kind === "demo");
+  const demoTotal = routeEntries.filter((e) => e.kind === "demo").length;
 
   return (
     <article className={shared.page}>
@@ -56,9 +57,13 @@ export function HomePage() {
                 <p className={styles.blurb}>{home.projectBlurbs[project.id]}</p>
                 <p className={styles.cardMeta}>
                   {project.views.length} example views
-                  {demoCount ? ` · ${demoCount} interactive demo` : " · placeholder panels"}
+                  {demoCount
+                    ? ` · ${demoCount} interactive ${demoCount === 1 ? "demo" : "demos"}`
+                    : " · placeholder panels"}
                 </p>
-                <p className={styles.cardTags}>{project.tags.map((t) => `#${t.toLowerCase().replace(/\s+/g, "-")}`).join(" ")}</p>
+                <p className={styles.cardTags}>
+                  {project.tags.map((t) => `#${t.toLowerCase().replace(/\s+/g, "-")}`).join(" ")}
+                </p>
               </li>
             );
           })}
@@ -73,15 +78,14 @@ export function HomePage() {
           {home.exploreSteps.map((step) => (
             <li key={step.title} className={styles.step}>
               <h3 className={styles.stepTitle}>{step.title}</h3>
-              <p className={styles.stepBody}>{step.body}</p>
+              <p className={styles.stepBody}>{typeof step.body === "function" ? step.body(demoTotal) : step.body}</p>
             </li>
           ))}
         </ol>
         <p className={styles.quickLinks}>
           Quick links: {demo && <Link to={demo.url}>{demo.title} demo</Link>}
           {demo && " · "}
-          <Link to="/search">Search</Link> · <Link to="/stack">Tech stack</Link> ·{" "}
-          <Link to="/docs/about">About</Link>
+          <Link to="/search">Search</Link> · <Link to="/stack">Tech stack</Link> · <Link to="/docs/about">About</Link>
         </p>
       </section>
 

@@ -1,4 +1,4 @@
-import { getBreadcrumbs, type RegistryEntry } from "~/content/registry";
+import type { RegistryEntry } from "~/content/registry";
 import { useShell } from "./ShellContext";
 import styles from "./TitleBar.module.css";
 
@@ -6,9 +6,6 @@ export const EXPLORER_DRAWER_ID = "explorer-drawer";
 
 export function TitleBar({ activeEntry }: { activeEntry: RegistryEntry | undefined }) {
   const { drawerOpen, openDrawer, closeDrawer, menuButtonRef, isDrawerLayout } = useShell();
-  const crumbs = activeEntry ? getBreadcrumbs(activeEntry).map((c) => c.name) : [];
-  const tail = activeEntry ? crumbs[crumbs.length - 1] : "404 — file not found";
-  const lead = crumbs.slice(0, -1).join(" › ");
 
   return (
     <header className={styles.titleBar}>
@@ -28,13 +25,14 @@ export function TitleBar({ activeEntry }: { activeEntry: RegistryEntry | undefin
       </button>
       <p className={styles.title}>
         <span className="sr-only">Garth Oliver, </span>
-        {lead && (
-          <span className={styles.lead} aria-hidden="true">
-            {lead} ›{" "}
-          </span>
+        {activeEntry ? (
+          <>
+            <span className={styles.tail}>{activeEntry.label}</span>
+            <span className={styles.suffix}> — portfolio</span>
+          </>
+        ) : (
+          <span className={styles.suffix}>portfolio</span>
         )}
-        <span className={styles.tail}>{tail}</span>
-        <span className={styles.suffix}> — portfolio</span>
       </p>
     </header>
   );

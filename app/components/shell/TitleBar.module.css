@@ -47,13 +47,7 @@
   white-space: nowrap;
 }
 
-/* The leading path shrinks with an ellipsis; the filename never does until the very end. */
-.lead {
-  flex: 0 20 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+/* The filename shrinks with an ellipsis; the " — portfolio" suffix never does. */
 .tail {
   flex: 0 1 auto;
   min-width: 0;
@@ -67,8 +61,5 @@
 @media (max-width: 899.98px) {
   .title {
     justify-content: flex-start;
-  }
-  .suffix {
-    display: none;
   }
 }

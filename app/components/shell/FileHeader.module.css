@@ -82,9 +82,20 @@
   flex: 0 1 auto;
   min-width: 0;
 }
+/* Truncation priority: the root crumb never shrinks, middle folders give way first. */
+.crumb:first-child {
+  flex-shrink: 0;
+}
+.crumb[data-middle="true"] {
+  flex-shrink: 20;
+}
 .crumb[data-last="true"] {
   flex-shrink: 0;
   max-width: 100%;
+}
+/* Narrow-only "…" stand-in for the middle crumbs (decorative; the real crumbs stay in the DOM). */
+.crumb[data-ellipsis="true"] {
+  display: none;
 }
 .crumb + .crumb::before {
   content: "›" / "";
@@ -111,14 +122,30 @@
   text-decoration: underline;
 }
 
+@media (min-width: 600px) {
+  /* Wide enough for the full path: only the middle folders truncate. */
+  .crumb:not([data-middle="true"]) {
+    flex-shrink: 0;
+  }
+}
+
 @media (max-width: 599.98px) {
   .file {
+    max-width: 45%;
     padding: 10px 12px;
   }
   .crumbs {
     padding: 0 12px;
   }
-  /* The file cell already shows the filename: keep the last crumb for assistive tech only. */
+  .crumb[data-ellipsis="true"] {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+  /*
+   * Middle folders collapse into the "…" and the last crumb (the file) is already shown in the
+   * file cell: both stay in the DOM, visually hidden, for assistive tech.
+   */
+  .crumb[data-middle="true"],
   .crumb[data-last="true"] {
     position: absolute;
     width: 1px;
@@ -126,6 +153,7 @@
     overflow: hidden;
     clip-path: inset(50%);
   }
+  .crumb[data-middle="true"]::before,
   .crumb[data-last="true"]::before {
     content: none;
   }

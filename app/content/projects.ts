@@ -28,7 +28,7 @@ export interface Project {
   folder: string;
   title: string;
   tags: string[];
-  status: "placeholder";
+  status: "placeholder" | "final";
   views: ProjectView[];
 }
 

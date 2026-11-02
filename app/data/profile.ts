@@ -2,7 +2,7 @@
 export interface Profile {
   name: string;
   headline: string;
-  status: "placeholder";
+  status: "placeholder" | "final";
   biography: string[];
   experience: { period: string; role: string; summary: string }[];
 }

@@ -1,6 +1,6 @@
 /**
  * Demo registry. Interactive demos live in app/demos/<demo-id>/ (components + CSS Modules);
- * their sample data lives separately in app/fixtures/<demo-id>/. A registry entry with
+ * their sample data lives separately in app/fixtures/<demo-id>.ts (or a folder). A registry entry with
  * `content: { type: "demo", demoId }` maps to a key here, and the view route renders the demo
  * inside <DemoFrame> (title, "Sample data" label, light panel).
  *

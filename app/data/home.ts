@@ -4,6 +4,16 @@ import type { ProjectId } from "~/content/projects";
  * Home page copy. Anything marked "[Placeholder]" is not final; the four project links come from
  * the registry, the short descriptions below are placeholders keyed by project id.
  */
+const NUMBER_WORDS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
+
+/** Sentence about how many views are working demos; "One is a working interactive demo" for one. */
+function describeDemos(demoCount: number): string {
+  if (demoCount <= 0) return "None are working demos yet; all are clearly labelled placeholder panels for now.";
+  const count = NUMBER_WORDS[demoCount] ?? String(demoCount);
+  const lead = demoCount === 1 ? `${count} is a working interactive demo` : `${count} are working interactive demos`;
+  return `${lead}; the rest are clearly labelled placeholder panels for now.`;
+}
+
 export const home = {
   eyebrow: "index.html",
   heading: "Garth Oliver — Portfolio",
@@ -31,7 +41,8 @@ export const home = {
     },
     {
       title: "Try the views",
-      body: "Files in each views folder are example screens built with made-up sample data. One is a working interactive demo; the rest are clearly labelled placeholder panels for now.",
+      body: (demoCount: number) =>
+        `Files in each views folder are example screens built with made-up sample data. ${describeDemos(demoCount)}`,
     },
     {
       title: "Open contact.bash",

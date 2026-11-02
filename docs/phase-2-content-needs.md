@@ -17,7 +17,7 @@ Per project, in `content/projects/<id>/`. See [markdown-conventions.md](markdown
 
 README placeholders: `role`, `summary`, Overview (problem, approach), My role, Features highlights (3), Lessons learned. Technical-requirements placeholders: Architecture (platform, integrations), the Requirements table (all rows `[Placeholder]` / `Pending`), Data model, Performance, Accessibility. Also update the "Views in this project" Type column when views change.
 
-Also in the registry (`app/content/registry.ts`): the shared `PLACEHOLDER` suffix ("Placeholder — content to be supplied in phase 2.") is appended to the `description` of every README, technical-requirements, placeholder view and the About entry. These descriptions feed `<meta name="description">` and search; replace them with real one-line descriptions. In `app/content/projects.ts`, each project has `status: "placeholder"`, and the titles were derived from folder names only: confirm or rewrite titles and `tags` once the projects are reviewed.
+Also in the registry (`app/content/registry.ts`): the shared `PLACEHOLDER` suffix ("Placeholder — content to be supplied in phase 2.") is appended to the `description` of every README, technical-requirements, placeholder view and the About entry. These descriptions feed `<meta name="description">` and search; replace them with real one-line descriptions. In `app/content/projects.ts`, each project has `status: "placeholder"` (type `"placeholder" | "final"`; not read anywhere yet), and the titles were derived from folder names only: confirm or rewrite titles and `tags` once the projects are reviewed.
 
 ## 2. The 16 placeholder views
 
@@ -59,21 +59,21 @@ The existing demo, `office-booking-calendar`, uses fictional data by design (wee
 - [ ] `placeholderCallout` and the placeholder callout in `HomePage.tsx`; remove both when content is final
 - [ ] `projectBlurbs`: one sentence per project (4 entries)
 - [ ] Review `introNote`, `projectsIntro`, `exploreSteps` and `contactBody`: they describe the demo contact terminal and the placeholder panels and will go stale
-- [ ] `HomePage.tsx` shows a hard-coded "status: placeholder content" line and builds the card text "N interactive demo" (hard-coded singular, so it reads wrongly once a project has more than one demo)
+- [ ] `HomePage.tsx` shows a hard-coded "status: placeholder content" line and builds the card text "N interactive demo(s)" (singular/plural by count). The "Try the views" step in `exploreSteps` derives its demo sentence from the number of `demo` entries in the registry, so it needs no edit when demos are added
 
 ## 4. About (`app/data/profile.ts`, `app/components/pages/AboutPage.tsx`)
 
 - [ ] `headline`
 - [ ] `biography` (2 paragraphs)
 - [ ] `experience` (3 entries: `period`, `role`, `summary`; add or remove entries as needed)
-- [ ] Set `status` (currently the literal type `"placeholder"`, shown as a badge in the Profile aside) and remove the `PlaceholderBadge` slots ("Biography placeholder", "Experience placeholder") and the page's placeholder callout in `AboutPage.tsx`
+- [ ] Set `status` (type `"placeholder" | "final"`, currently `"placeholder"`; the Profile aside shows a hard-coded `PlaceholderBadge`, so update that to branch on `status` or remove it) and remove the `PlaceholderBadge` slots ("Biography placeholder", "Experience placeholder") and the page's placeholder callout in `AboutPage.tsx`
 - [ ] Registry description for `docs:about` (see section 1)
 
 ## 5. Stack (`app/data/stack.ts`, `app/components/pages/StackPage.tsx`)
 
 - [ ] `description` and the `notes` strings that contain `[Placeholder]`
 - [ ] `groups`: the three groups (`languages`, `frameworks`, `tools`) each hold one `[placeholder]` item; replace with real items (`name`, `value`, `note`) and write each group's `explanation`. Groups can be added or renamed.
-- [ ] `aiPreferences`: `status: "pending"` and its notes. Supply Garth's real AI-tool preferences (the type allows only `"pending"` today, so widen `StackData["aiPreferences"]`).
+- [ ] `aiPreferences`: `status: "pending"` and its notes. Supply Garth's real AI-tool preferences (set `status: "supplied"`; the type is `"pending" | "supplied"`).
 - [ ] Remove the placeholder callout in `StackPage.tsx`; the "pending" styling is regex-driven on `pending|placeholder|to be supplied` and disappears once the text no longer matches.
 
 ## 6. Blog

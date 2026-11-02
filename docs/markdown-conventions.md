@@ -62,7 +62,9 @@ Each table is wrapped in a keyboard-focusable scroll region labelled `Table: <he
 ## Links
 
 - Link to other pages by **clean URL**, as registered: `[README](/portfolio/hybrid-wp-react-intranet)`, `[technical-requirements.md](/portfolio/hybrid-wp-react-intranet/technical-requirements)`, `[a view](/portfolio/hybrid-wp-react-intranet/views/office-booking-calendar)`. No `.md` or `.html` file links and no trailing slash.
-- Internal links that match a registry URL become client-side navigations (the shell stays mounted). Anything else (external, `#hash`-only, unknown paths, modified clicks) is left to the browser. There is no build-time link checker, so check new links by clicking them.
+- Internal links that match a registry URL become client-side navigations (the shell stays mounted). Anything else (external, `#hash`-only, modified clicks) is left to the browser.
+- **The build checks links** (`loadMarkdown` → `app/content/validate-links.ts`). Each `href` is resolved against the document's own URL like a browser would, so a relative `technical-requirements.md` fails; same-origin paths must be registered URLs (links to other projects are fine); a `#fragment` must be a heading id in the target document (checked only for Markdown targets). A bad link fails `npm run build` and the Vitest content tests with a message naming the file.
+- **Only safe URL protocols are allowed** in links and images: `http:`, `https:`, `mailto:`, `tel:`, relative paths and `#fragments`. Anything else (`javascript:`, `data:`, …) throws during render and fails the build.
 - External `http(s)://` links automatically get `rel="noopener noreferrer"`.
 - Each README has a "Views in this project" table with a **Type** column typed by hand (`Placeholder panel`, `Interactive demo (sample data)`). Update it when a view becomes a demo.
 
@@ -81,4 +83,4 @@ GFM task lists, strikethrough and autolinks, plus standard Markdown (lists, code
 
 - Mark every unfinished passage `[Placeholder]`; never invent clients, outcomes, metrics or personal details.
 - Keep text anonymised. Examples in views use fictional data.
-- The plain text of each document is indexed by search (`mdastPlainText` in `render.ts`), so write meaningful body text.
+- The plain text of each document is indexed by search (`mdastPlainText` in `render.ts`), so write meaningful body text. The leading `# Title` and callout titles are left out of the indexed text so snippets do not start with the title.

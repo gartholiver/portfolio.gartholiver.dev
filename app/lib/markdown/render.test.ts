@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { renderMarkdown } from "./render";
 import { loadMarkdown } from "~/content/markdown.server";
-import { getEntryByPathname, routeEntries } from "~/content/registry";
+import { routeEntries } from "~/content/registry";
+import { findLinkProblems } from "~/content/validate-links";
 
 describe("renderMarkdown", () => {
   const sample = `---
@@ -69,12 +70,27 @@ Intro paragraph.
 Line one  
 line *two* ends.
 `);
-    expect(text).toContain("Title Intro paragraph. Files");
+    expect(text).toContain("Intro paragraph. Files");
     expect(text).toContain("File Title Type lms-scorm-integration.html LMS / SCORM Placeholder second.html Bold cell Other");
     expect(text).toContain("first item second item");
-    expect(text).toContain("Callout title Callout body.");
+    expect(text).toContain("Callout body.");
     expect(text).toContain("line two ends."); // inline emphasis does not introduce gaps
     expect(text).not.toMatch(/FileTitle|TypeUnder|itemsecond|\s{2,}/);
+  });
+
+  it("leaves the leading title and callout titles out of the plain text", () => {
+    const { text } = renderMarkdown(sample);
+    expect(text.startsWith("Sample")).toBe(false);
+    expect(text).toBe("Body text. Plain quote Section One Sub section a b 1 2");
+    const untitled = renderMarkdown("# Page title\n\n> [!note]\n> Body.\n\n## Later\n");
+    expect(untitled.text).toBe("Body. Later");
+    expect(untitled.text).not.toMatch(/Page title|Note/);
+  });
+
+  it("collects authored links and anchor ids (heading permalinks excluded)", () => {
+    const doc = renderMarkdown("# T\n\n## One\n\n[a](/x) [b](#one) <https://example.com>\n");
+    expect(doc.links).toEqual(["/x", "#one", "https://example.com"]);
+    expect(doc.anchorIds).toEqual(["t", "one"]);
   });
 
   it("produces readable, space-separated text for every real document", () => {
@@ -111,6 +127,46 @@ line *two* ends.
   it("drops raw HTML", () => {
     expect(renderMarkdown("<script>alert(1)</script>\n\nHi").html).not.toContain("<script>");
   });
+
+  describe("URL protocol safety", () => {
+    it("allows http(s), mailto, tel, relative paths and fragments", () => {
+      const md = [
+        "[a](http://example.com) [b](https://example.com/x?y=1#z) [c](mailto:me@example.com) [d](tel:+15551234)",
+        "[e](/portfolio/x) [f](./y) [g](../z) [h](page.md) [i](#top) [j](//cdn.example.com/x) [k](?q=1)",
+        "![img](/a.png) ![img2](https://example.com/a.png) ![img3](a.png)",
+      ].join("\n");
+      expect(() => renderMarkdown(md)).not.toThrow();
+    });
+
+    it("throws on an inline javascript: link", () => {
+      expect(() => renderMarkdown("[x](javascript:alert(1))")).toThrow(/Unsafe URL in Markdown link.*javascript:/);
+    });
+
+    it("throws on a reference-style javascript: link", () => {
+      expect(() => renderMarkdown("[x][1]\n\n[1]: javascript:alert(1)")).toThrow(/Unsafe URL/);
+    });
+
+    it("throws on a javascript: autolink", () => {
+      expect(() => renderMarkdown("<javascript:alert(1)>")).toThrow(/Unsafe URL/);
+    });
+
+    it("throws on javascript: and data: image sources", () => {
+      expect(() => renderMarkdown("![](javascript:alert(1))")).toThrow(/Unsafe URL in Markdown image/);
+      expect(() => renderMarkdown("![x](data:image/svg+xml;base64,PHN2Zz4=)")).toThrow(/Unsafe URL in Markdown image/);
+    });
+
+    it("rejects other schemes and mixed case", () => {
+      for (const href of ["data:text/html;base64,AAAA", "vbscript:x", "file:///etc/passwd", "JaVaScRiPt:alert(1)"]) {
+        expect(() => renderMarkdown(`[x](${href})`), href).toThrow(/Unsafe URL/);
+      }
+    });
+
+    it("does not emit a scheme from whitespace-obfuscated URLs", () => {
+      // micromark percent-encodes the tab, so the browser sees a relative path, not `javascript:`.
+      const { html } = renderMarkdown("[x](<java\tscript:alert(1)>)");
+      expect(html).not.toMatch(/href="\s*java\s*script:/i);
+    });
+  });
 });
 
 describe("project Markdown content", () => {
@@ -127,12 +183,9 @@ describe("project Markdown content", () => {
   });
 
   it.each(docs.map((d) => [d.file, d] as const))("%s internal links resolve to registry URLs", (_file, { entry, file }) => {
-    const hrefs = [...loadMarkdown(file).html.matchAll(/href="(\/[^"#]*)/g)].map((m) => m[1]!);
-    expect(hrefs.length).toBeGreaterThan(0);
-    for (const href of hrefs) {
-      const target = getEntryByPathname(href);
-      expect(target, href).toBeDefined();
-      expect(target?.projectId).toBe(entry.projectId);
-    }
+    const doc = loadMarkdown(file);
+    expect(doc.links.length).toBeGreaterThan(0);
+    // Same validator the build uses (loadMarkdown already throws on a bad link; this asserts it directly).
+    expect(findLinkProblems({ url: entry.url, links: doc.links }, (f) => loadMarkdown(f).anchorIds)).toEqual([]);
   });
 });

@@ -26,7 +26,7 @@ export interface StackData {
   /** Plain-language notes for the top-level keys and the enclosing braces. */
   notes: { root: string; name: string; description: string; stack: string; ai: string };
   groups: StackGroup[];
-  aiPreferences: { status: "pending"; note: string; statusNote: string; noteNote: string };
+  aiPreferences: { status: "pending" | "supplied"; note: string; statusNote: string; noteNote: string };
 }
 
 export const stack: StackData = {

@@ -380,3 +380,45 @@ test("respects prefers-reduced-motion", async ({ page }) => {
   const duration = await page.locator("#explorer-drawer").evaluate((el) => getComputedStyle(el).transitionDuration);
   expect(parseFloat(duration)).toBeLessThan(0.01);
 });
+
+test.describe("title bar and breadcrumbs", () => {
+  const crumbText = (page: Page, text: string) =>
+    page.getByRole("navigation", { name: "Breadcrumb" }).getByText(text, { exact: true });
+  const visible = (page: Page, text: string) =>
+    crumbText(page, text).evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return r.width > 2 && r.height > 2;
+    });
+
+  test("title shows the active file once, not the path, and plain 'portfolio' on 404", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(VIEW);
+    const title = page.getByRole("banner").locator("p");
+    await expect(title).toHaveText("Garth Oliver, custom-woo-extension-plugin.html — portfolio");
+    await expect(title).not.toContainText("›");
+
+    await page.goto("/no-such-page");
+    await expect(page.getByRole("banner").locator("p")).toHaveText("Garth Oliver, portfolio");
+  });
+
+  test("wide: full path visible; narrow: middle crumbs collapse to an ellipsis but stay in the DOM", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(VIEW);
+    for (const name of ["portfolio", "legal-doc-wp-ordering-system", "views"]) {
+      expect(await visible(page, name), name).toBe(true);
+    }
+
+    await page.setViewportSize({ width: 360, height: 740 });
+    expect(await visible(page, "portfolio")).toBe(true);
+    expect(await visible(page, "views")).toBe(true);
+    expect(await visible(page, "legal-doc-wp-ordering-system")).toBe(false);
+    await expect(page.getByRole("navigation", { name: "Breadcrumb" }).getByText("…", { exact: true })).toBeVisible();
+    // Full path still in the DOM / accessibility tree and as a title.
+    await expect(crumbText(page, "legal-doc-wp-ordering-system")).toBeAttached();
+    await expect(page.getByRole("navigation", { name: "Breadcrumb" }).locator("ol")).toHaveAttribute(
+      "title",
+      "portfolio › legal-doc-wp-ordering-system › views › custom-woo-extension-plugin.html",
+    );
+    expect((await noHorizontalScroll(page)).doc).toBe(0);
+  });
+});
