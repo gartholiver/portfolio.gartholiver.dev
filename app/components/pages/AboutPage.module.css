@@ -1,0 +1,118 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 8px 40px;
+  align-items: start;
+}
+@media (max-width: 819.98px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.aside {
+  position: sticky;
+  top: 16px;
+  padding: 16px;
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border-content);
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+}
+@media (max-width: 819.98px) {
+  .aside {
+    position: static;
+    order: -1;
+    margin-bottom: 16px;
+  }
+}
+.aside h2 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.facts {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+.facts dt {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.facts dd {
+  margin: 2px 0 0;
+  line-height: 1.5;
+}
+
+/* Dashed outline = "slot waiting for real content". */
+.slot {
+  margin: 0 0 14px;
+  padding: 14px 16px;
+  border: 1px dashed rgba(229, 181, 103, 0.55);
+  border-radius: var(--radius-lg);
+  background: rgba(229, 181, 103, 0.04);
+}
+.slot p {
+  margin: 8px 0 0;
+}
+.slotHead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+}
+
+.timeline {
+  margin: 0;
+  padding: 0 0 0 20px;
+  list-style: none;
+  border-left: 2px solid var(--color-border-content);
+}
+.entry {
+  position: relative;
+  margin: 0 0 14px;
+  padding: 14px 16px;
+  border: 1px dashed rgba(229, 181, 103, 0.55);
+  border-radius: var(--radius-lg);
+  background: rgba(229, 181, 103, 0.04);
+}
+.entry::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: -28px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--color-surface-2);
+  border-radius: 50%;
+  background: var(--color-icon-folder);
+}
+.entry h3 {
+  margin: 8px 0 4px;
+  font-size: 16px;
+}
+.entry p {
+  margin: 0;
+  font-size: 15px;
+}
+.period {
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.h2 {
+  margin-top: 32px;
+}
+.h2First {
+  margin-top: 0;
+}
+.cta {
+  margin-top: 40px;
+}

@@ -1,0 +1,334 @@
+/* Reading view for project Markdown documents. Overrides the zero-specificity :where(main …) defaults. */
+
+.doc {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  /* The content panel's width depends on the explorer/drawer, so layout reacts to the container. */
+  container-type: inline-size;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 824px; /* 760 column + 2 × 32 padding */
+  margin: 0 auto;
+  padding: 40px 32px 72px;
+}
+.main {
+  min-width: 0;
+}
+.side {
+  display: none;
+}
+@media (max-width: 599.98px) {
+  .layout {
+    padding: 24px 16px 48px;
+  }
+}
+@container (min-width: 1100px) {
+  .layout {
+    max-width: none;
+    grid-template-columns: minmax(0, 760px) 220px;
+    column-gap: 56px;
+    justify-content: center;
+  }
+  .side {
+    display: block;
+    align-self: start;
+    position: sticky;
+    top: 24px;
+    max-height: calc(100vh - 360px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* keep focus rings of the links visible inside the clipped scroller */
+    padding: 2px;
+  }
+  .inlineToc {
+    display: none;
+  }
+}
+
+/* ---- properties block ---- */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 0 0 28px;
+  padding: 12px 16px;
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-border-content);
+  border-radius: var(--radius-lg);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+.meta > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 6px;
+  min-width: 0;
+}
+.meta dt::after {
+  content: ":";
+}
+.meta dd {
+  margin: 0;
+  font-weight: 500;
+  color: var(--color-text);
+  min-width: 0;
+}
+.meta a {
+  color: var(--color-accent);
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tags li {
+  padding: 0 8px;
+  border: 1px solid var(--color-border-content);
+  border-radius: var(--radius-pill);
+  color: var(--color-warning);
+  font-size: 12px;
+  font-weight: 500;
+}
+.status {
+  display: inline-block;
+  padding: 0 10px;
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-pill);
+  color: var(--color-warning);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.title {
+  margin: 0 0 16px;
+  overflow-wrap: anywhere;
+}
+.lead {
+  margin: 0 0 24px;
+}
+
+/* ---- table of contents ---- */
+.tocList,
+.tocSub {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tocList a {
+  display: block;
+  padding: 3px 0;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.tocList a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.tocSub {
+  padding-left: 14px;
+}
+.tocSub a {
+  font-size: 13px;
+}
+
+.sideToc {
+  padding-left: 16px;
+  border-left: 1px solid var(--color-border-content);
+}
+.tocHeading {
+  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.inlineToc {
+  margin: 0 0 28px;
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-border-content);
+  border-radius: var(--radius-lg);
+}
+.inlineToc summary {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  list-style-position: inside;
+}
+.inlineToc .tocList {
+  padding: 0 14px 10px 36px;
+  list-style: none;
+}
+.inlineToc .tocList a {
+  padding: 5px 0;
+}
+
+/* ---- rendered Markdown ---- */
+.prose > :first-child {
+  margin-top: 0;
+}
+.prose > :last-child {
+  margin-bottom: 0;
+}
+.prose h2 {
+  margin-top: 40px;
+  scroll-margin-top: 24px;
+}
+.prose h3,
+.prose h4 {
+  scroll-margin-top: 24px;
+}
+.prose :is(h2, h3, h4) :global(.heading-anchor) {
+  margin-left: 0.4em;
+  color: var(--color-text-muted);
+  font-weight: 400;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease);
+}
+.prose :is(h2, h3, h4):hover :global(.heading-anchor) {
+  opacity: 1;
+}
+.prose :is(h2, h3, h4) :global(.heading-anchor):hover {
+  color: var(--color-accent);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 22px;
+}
+.prose li + li {
+  margin-top: 4px;
+}
+.prose li > :is(ul, ol) {
+  margin: 4px 0 0;
+}
+.prose li::marker {
+  color: var(--color-text-muted);
+}
+.prose :global(.contains-task-list) {
+  padding-left: 4px;
+  list-style: none;
+}
+.prose input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: var(--color-accent-status);
+}
+
+.prose :not(pre) > code {
+  padding: 1px 6px;
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-border-content);
+  border-radius: var(--radius-sm);
+  color: var(--color-warning);
+  overflow-wrap: anywhere;
+}
+.prose pre code {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--color-text);
+  font-size: inherit;
+}
+.prose pre:focus-visible {
+  outline-offset: -2px;
+}
+
+.prose blockquote {
+  margin: 0 0 16px;
+  padding: 0 0 0 16px;
+  border-left: 3px solid var(--color-border-content);
+  color: var(--color-text-muted);
+}
+.prose blockquote > :last-child {
+  margin-bottom: 0;
+}
+.prose del {
+  color: var(--color-text-muted);
+}
+
+/* Tables: the wrapper (added by the Markdown pipeline) is the horizontal scroll region. */
+.prose :global(.table-scroll) {
+  margin: 0 0 24px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border: 1px solid var(--color-border-content);
+  border-radius: var(--radius-lg);
+}
+.prose :global(.table-scroll):focus-visible {
+  outline-offset: -2px;
+}
+.prose table {
+  display: table;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  overflow: visible;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.prose th,
+.prose td {
+  min-width: 7.5rem;
+  vertical-align: top;
+}
+.prose thead th {
+  border-top: 0;
+}
+
+/* Callouts: > [!type] Title */
+.prose :global(.callout) {
+  --callout-bg: var(--color-callout-info-bg);
+  --callout-accent: var(--color-accent);
+  margin: 0 0 24px;
+  padding: 14px 18px;
+  background: var(--callout-bg);
+  border-left: 3px solid var(--callout-accent);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-text);
+}
+.prose :global(.callout[data-callout="note"]) {
+  --callout-bg: #232833;
+  --callout-accent: #a9b4c8;
+}
+.prose :global(.callout[data-callout="tip"]) {
+  --callout-bg: #1c2e2b;
+  --callout-accent: var(--color-success);
+}
+.prose :global(.callout[data-callout="warning"]) {
+  --callout-bg: #322a1c;
+  --callout-accent: var(--color-warning);
+}
+.prose :global(.callout[data-callout="placeholder"]) {
+  --callout-bg: #241f2e;
+  --callout-accent: #c4a7ff;
+  border: 1px dashed var(--callout-accent);
+  border-left-width: 3px;
+  border-left-style: solid;
+}
+.prose :global(.callout) > * {
+  margin: 0 0 8px;
+}
+.prose :global(.callout) > :last-child {
+  margin-bottom: 0;
+}
+.prose :global(.callout) > :global(.callout-title) {
+  font-weight: 600;
+  color: var(--callout-accent);
+}

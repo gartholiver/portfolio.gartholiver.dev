@@ -1,0 +1,88 @@
+/* Light application panel inside the dark shell (prototype-spec §5.3). All text pairs meet WCAG AA on white. */
+
+.frame {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.labelRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+.badge {
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.panel {
+  /* Scope a light palette to everything inside the panel. */
+  --color-focus: #2b6cb0;
+  color-scheme: light;
+  overflow: hidden;
+  background: var(--color-demo-bg);
+  color: var(--color-demo-text);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-demo-panel);
+  font-size: 14px;
+  line-height: 1.6;
+}
+/* Links, headings and focus must not inherit the dark theme's light-on-dark values. */
+.panel a {
+  color: #1f5a9e; /* 6.9:1 on white */
+}
+.panel a:hover {
+  color: #163f70;
+}
+.panel :focus-visible {
+  outline: 2px solid #2b6cb0; /* 5.2:1 on white */
+  outline-offset: 2px;
+}
+.panel ::selection {
+  background: #cfe3fb;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-demo-border);
+}
+.title {
+  margin: 0;
+  color: var(--color-demo-text);
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+.meta {
+  margin: 0;
+  color: var(--color-demo-text-muted);
+  font-size: 13px;
+}
+
+.body {
+  overflow-x: auto;
+  padding: 16px 24px 24px;
+}
+
+@media (max-width: 599.98px) {
+  .header {
+    padding: 16px;
+  }
+  .body {
+    padding: 16px;
+  }
+}

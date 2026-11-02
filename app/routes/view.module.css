@@ -1,0 +1,11 @@
+/* Page wrapper for view routes: wide enough for the 880px demo frame plus 32px gutters. */
+.page {
+  max-width: 944px;
+  margin: 0 auto;
+  padding: 32px;
+}
+@media (max-width: 599.98px) {
+  .page {
+    padding: 16px;
+  }
+}

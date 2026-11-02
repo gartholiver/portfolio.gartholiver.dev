@@ -29,7 +29,7 @@ status: placeholder
   it("parses frontmatter, slugs headings, builds a TOC", () => {
     const doc = renderMarkdown(sample);
     expect(doc.frontmatter).toMatchObject({ title: "Sample", stack: ["A", "B"], status: "placeholder" });
-    expect(doc.html).toContain('<h2 id="section-one">Section One</h2>');
+    expect(doc.html).toContain('<h2 id="section-one">Section One<a class="heading-anchor"');
     expect(doc.toc).toEqual([
       { depth: 2, id: "section-one", text: "Section One" },
       { depth: 3, id: "sub-section", text: "Sub section" },
@@ -46,6 +46,28 @@ status: placeholder
     expect(html).not.toContain("[!warning]");
     expect(html).toContain("<blockquote>");
     expect(text).not.toContain("[!warning]");
+  });
+
+  it("adds decorative heading permalinks without polluting TOC text", () => {
+    const doc = renderMarkdown(sample);
+    expect(doc.html).toContain('<a class="heading-anchor" href="#sub-section" aria-hidden="true" tabindex="-1">#</a>');
+    expect(doc.html).not.toMatch(/<h1[^>]*>[^<]*<a/);
+    expect(doc.toc.map((t) => t.text)).toEqual(["Section One", "Sub section"]);
+    expect(doc.text).not.toContain("#");
+  });
+
+  it("marks external links noopener noreferrer and leaves internal links alone", () => {
+    const { html } = renderMarkdown("[a](https://example.com) [b](//cdn.example.com/x) [c](/portfolio/x) [d](#top)");
+    expect(html).toContain('<a href="https://example.com" rel="noopener noreferrer">a</a>');
+    expect(html).toContain('<a href="//cdn.example.com/x" rel="noopener noreferrer">b</a>');
+    expect(html).toContain('<a href="/portfolio/x">c</a>');
+    expect(html).toContain('<a href="#top">d</a>');
+  });
+
+  it("wraps tables in a focusable, labelled scroll region", () => {
+    const { html } = renderMarkdown(sample);
+    expect(html).toContain('<div class="table-scroll" role="region" aria-label="Table: a, b" tabindex="0"><table>');
+    expect(html.match(/<table>/g)).toHaveLength(1);
   });
 
   it("drops raw HTML", () => {

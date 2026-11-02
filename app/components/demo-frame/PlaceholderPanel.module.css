@@ -1,0 +1,33 @@
+.panel {
+  display: grid;
+  gap: 20px;
+  padding: 8px 0 0;
+}
+.label {
+  margin: 0 0 4px;
+  color: var(--color-demo-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.summary,
+.status {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--color-demo-text);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px dashed #9aa3b5;
+  border-radius: var(--radius-md);
+  background: #f6f7fa;
+}
+.back {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}

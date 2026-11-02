@@ -10,6 +10,13 @@
  *   > Body text…
  *
  * Raw HTML in Markdown is dropped (remark-rehype default) — content stays data, not markup.
+ *
+ * Display enhancements added to the HTML (after the TOC is collected, so TOC text stays clean):
+ *  - h2–h4 get a trailing permalink `<a class="heading-anchor" href="#id" aria-hidden tabindex=-1>#</a>`
+ *    (decorative; the TOC and native fragment links are the accessible route),
+ *  - external links (http(s):// and //) get `rel="noopener noreferrer"`,
+ *  - tables are wrapped in `<div class="table-scroll" role="region" tabindex="0">` so wide tables
+ *    scroll in their own keyboard-reachable region instead of widening the page.
  */
 import { unified } from "unified";
 import remarkParse from "remark-parse";
@@ -17,12 +24,12 @@ import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
-import { visit } from "unist-util-visit";
+import { SKIP, visit } from "unist-util-visit";
 import { toString as mdastToString } from "mdast-util-to-string";
 import { toString as hastToString } from "hast-util-to-string";
 import { parse as parseYaml } from "yaml";
 import type { Root as MdastRoot, Blockquote, Paragraph, Text } from "mdast";
-import type { Root as HastRoot } from "hast";
+import type { Element as HastElement, Root as HastRoot } from "hast";
 
 export const CALLOUT_TYPES = ["note", "info", "tip", "warning", "placeholder"] as const;
 export type CalloutType = (typeof CALLOUT_TYPES)[number];
@@ -110,6 +117,47 @@ function rehypeCollectToc(toc: TocItem[]) {
   };
 }
 
+const EXTERNAL_HREF_RE = /^(?:https?:)?\/\//i;
+
+function el(tagName: string, properties: HastElement["properties"], children: HastElement["children"]): HastElement {
+  return { type: "element", tagName, properties, children };
+}
+
+/** rehype plugin: heading permalinks, safe external links, scrollable table wrappers. */
+function rehypeEnhance() {
+  return (tree: HastRoot) => {
+    visit(tree, "element", (node, index, parent) => {
+      if ((node.tagName === "h2" || node.tagName === "h3" || node.tagName === "h4") && typeof node.properties?.id === "string") {
+        node.children.push(
+          el(
+            "a",
+            { className: ["heading-anchor"], href: `#${node.properties.id}`, ariaHidden: "true", tabIndex: -1 },
+            [{ type: "text", value: "#" }],
+          ),
+        );
+        return;
+      }
+      if (node.tagName === "a" && typeof node.properties?.href === "string" && EXTERNAL_HREF_RE.test(node.properties.href)) {
+        node.properties.rel = ["noopener", "noreferrer"];
+        return;
+      }
+      if (node.tagName === "table" && parent && typeof index === "number") {
+        const headers: string[] = [];
+        visit(node, "element", (n) => {
+          if (n.tagName === "th") headers.push(hastToString(n).trim());
+        });
+        const label = headers.length ? `Table: ${headers.join(", ")}` : "Table";
+        parent.children[index] = el(
+          "div",
+          { className: ["table-scroll"], role: "region", ariaLabel: label, tabIndex: 0 },
+          [node],
+        );
+        return [SKIP, index + 1];
+      }
+    });
+  };
+}
+
 export function renderMarkdown(source: string): RenderedMarkdown {
   const { data, body } = splitFrontmatter(source);
   const toc: TocItem[] = [];
@@ -120,6 +168,7 @@ export function renderMarkdown(source: string): RenderedMarkdown {
     .use(remarkRehype)
     .use(rehypeSlug)
     .use(rehypeCollectToc(toc))
+    .use(rehypeEnhance)
     .use(rehypeStringify);
 
   const mdast = processor.parse(body);

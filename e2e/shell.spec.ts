@@ -175,7 +175,10 @@ test.describe("desktop shell", () => {
 
     // clicking an in-page link (table of contents) scrolls the panel, not the window
     await main.evaluate((m) => (m.scrollTop = 0));
-    await page.locator('a[href="#features"]').first().click();
+    // (the README has an inline collapsible TOC, a side TOC and a decorative permalink — use the visible TOC)
+    const toc = page.getByRole("navigation", { name: "Table of contents" });
+    if (await toc.locator("summary").isVisible()) await toc.locator("summary").click();
+    await toc.locator('a[href="#features"]').click();
     await expect.poll(() => main.evaluate((m) => m.scrollTop)).toBeGreaterThan(0);
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
 
