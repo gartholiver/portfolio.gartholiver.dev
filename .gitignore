@@ -1,0 +1,11 @@
+node_modules/
+build/
+.react-router/
+.DS_Store
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+*.log
+.env
+.env.*
