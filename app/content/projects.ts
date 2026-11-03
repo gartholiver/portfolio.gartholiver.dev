@@ -1,6 +1,6 @@
 /**
  * Portfolio projects. Folder names come from the design brief and double as URL slugs.
- * Titles are expanded from the folder names only — no client names, outcomes or metrics.
+ * Titles come from the folder names. Optional `summary`/`description` text must stay anonymised: no client or agency names, outcomes or metrics.
  * Keep this module free of Vite-only imports: react-router.config.ts imports it via the registry.
  */
 
@@ -20,6 +20,8 @@ export interface ProjectView {
   title: string;
   /** Interactive demo id when the view is a working demo; omit for placeholder views. */
   demoId?: string;
+  /** Real one-line description (search + <meta name="description">). Replaces the generated text when set. */
+  description?: string;
 }
 
 export interface Project {
@@ -29,6 +31,8 @@ export interface Project {
   title: string;
   tags: string[];
   status: "placeholder" | "final";
+  /** Real one-line project summary. When set, README and technical-requirements descriptions use it instead of the placeholder suffix. */
+  summary?: string;
   views: ProjectView[];
 }
 
@@ -38,10 +42,32 @@ export const projects: readonly Project[] = [
     folder: "hybrid-wp-react-intranet",
     title: "Hybrid WordPress + React Intranet",
     tags: ["WordPress", "React", "Intranet"],
-    status: "placeholder",
+    status: "final",
+    summary:
+      "An intranet for a healthcare-sector company with a large remote workforce, built as a React single-page app inside a WordPress theme.",
     views: [
+      {
+        slug: "onboarding-wizard",
+        title: "Onboarding Wizard",
+        demoId: "onboarding-wizard",
+        description:
+          "Interactive demo: a step-by-step onboarding flow with a progress bar, Back and Next, and a dashboard navigation that unlocks on completion. Fictional sample data.",
+      },
+      {
+        slug: "notification-center",
+        title: "Notification Center",
+        demoId: "notification-center",
+        description:
+          "Interactive demo: notifications targeted to everyone, to teams or to named people, with unseen and seen lists, mark as read and peer kudos. Fictional sample data.",
+      },
+      {
+        slug: "interactive-remote-employee-map",
+        title: "Interactive Remote Employee Map",
+        demoId: "interactive-remote-employee-map",
+        description:
+          "Interactive demo: a keyboard-friendly map of approximate staff locations with a department filter, profile cards and a table alternative. Fictional sample data.",
+      },
       { slug: "office-booking-calendar", title: "Office Booking Calendar", demoId: "office-booking-calendar" },
-      { slug: "interactive-remote-employee-map", title: "Interactive Remote Employee Map" },
       { slug: "employee-directory", title: "Employee Directory" },
       { slug: "documentation-system", title: "Documentation System" },
     ],

@@ -61,7 +61,9 @@ test.describe("prerendered files", () => {
   test("Markdown documents include their body text and heading ids", () => {
     const html = readFileSync(htmlFileFor("/portfolio/hybrid-wp-react-intranet"), "utf8");
     for (const id of ["overview", "my-role", "lessons-learned", "views-in-this-project"]) expect(html).toContain(`id="${id}"`);
-    expect(html).toContain("A short, anonymised description of what this project is and who it serves.");
+    expect(html).toContain(
+      "This case study is anonymised: the company is described only by its sector, and every person, place and message in the demos is fictional.",
+    );
     expect(html).toContain('<aside class="callout"');
   });
 

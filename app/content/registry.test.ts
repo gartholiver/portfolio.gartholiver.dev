@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { matchRoutes, type RouteObject } from "react-router";
 import type { RouteConfigEntry } from "@react-router/dev/routes";
 import routeConfig from "~/routes";
+import { getProject } from "./projects";
 import {
   buildExplorerTree,
   entries,
@@ -9,6 +10,9 @@ import {
   getBreadcrumbs,
   getEntryById,
   getEntryByPathname,
+  describeReadme,
+  describeTechnicalRequirements,
+  describeView,
   getPrerenderPaths,
   getSearchSources,
   isRouteEntry,
@@ -47,15 +51,15 @@ describe("content registry", () => {
     expect(new Set(urls).size).toBe(urls.length);
   });
 
-  it("contains 17 views (1 demo), 8 Markdown docs and the top-level pages", () => {
+  it("contains 19 views (4 demos), 8 Markdown docs and the top-level pages", () => {
     const views = entries.filter((e) => e.kind === "view" || e.kind === "demo");
-    expect(views).toHaveLength(17);
-    expect(entries.filter((e) => e.kind === "demo")).toHaveLength(1);
+    expect(views).toHaveLength(19);
+    expect(entries.filter((e) => e.kind === "demo")).toHaveLength(4);
     expect(entries.filter((e) => e.kind === "markdown")).toHaveLength(8);
     for (const kind of ["home", "about", "blog", "stack", "search", "contact-action"] as const) {
       expect(entries.filter((e) => e.kind === kind)).toHaveLength(1);
     }
-    expect(entries).toHaveLength(17 + 8 + 6);
+    expect(entries).toHaveLength(19 + 8 + 6);
   });
 
   it("resolves the duplicate custom-woo-extension-plugin.html to two distinct entries", () => {
@@ -135,7 +139,60 @@ describe("content registry", () => {
 
   it("prerenders exactly the routable entries", () => {
     expect(getPrerenderPaths().sort()).toEqual(entries.filter(isRouteEntry).map((e) => e.url).sort());
-    expect(getPrerenderPaths()).toHaveLength(17 + 8 + 5);
+    expect(getPrerenderPaths()).toHaveLength(19 + 8 + 5);
+  });
+
+  it("orders the intranet views as in the case study", () => {
+    const project = getProject("hybrid-wp-react-intranet")!;
+    expect(project.status).toBe("final");
+    expect(project.views.map((v) => v.slug)).toEqual([
+      "onboarding-wizard",
+      "notification-center",
+      "interactive-remote-employee-map",
+      "office-booking-calendar",
+      "employee-directory",
+      "documentation-system",
+    ]);
+    for (const v of project.views.slice(0, 4)) expect(v.demoId).toBe(v.slug);
+    for (const v of project.views.slice(4)) expect(v.demoId).toBeUndefined();
+  });
+
+  it("describes projects and views from real copy when supplied", () => {
+    const PH = "Placeholder — content to be supplied in phase 2.";
+    expect(describeReadme({ title: "T", summary: "S." })).toBe("S.");
+    expect(describeTechnicalRequirements({ title: "T", summary: "S." })).toBe("Technical requirements for T. S.");
+    expect(describeReadme({ title: "T" })).toBe(`Project summary for T. ${PH}`);
+    expect(describeTechnicalRequirements({ title: "T" })).toBe(`Technical requirements for T. ${PH}`);
+    expect(describeView({ title: "T" }, { demoId: "x", description: "D." })).toBe("D.");
+    expect(describeView({ title: "T" }, { demoId: "x" })).toBe("Interactive sample-data demo from T.");
+    expect(describeView({ title: "T" }, {})).toBe(`Placeholder view from T. ${PH}`);
+  });
+
+  it("uses the intranet summary and view descriptions in the registry", () => {
+    const project = getProject("hybrid-wp-react-intranet")!;
+    expect(getEntryById("doc:hybrid-wp-react-intranet:readme")?.description).toBe(project.summary);
+    expect(getEntryById("doc:hybrid-wp-react-intranet:technical-requirements")?.description).toBe(
+      `Technical requirements for Hybrid WordPress + React Intranet. ${project.summary}`,
+    );
+    for (const v of project.views.slice(0, 3)) {
+      expect(getEntryById(`view:hybrid-wp-react-intranet:${v.slug}`)?.description).toBe(v.description);
+    }
+    expect(getEntryById("view:hybrid-wp-react-intranet:office-booking-calendar")?.description).toBe(
+      "Interactive sample-data demo from Hybrid WordPress + React Intranet.",
+    );
+    expect(getEntryById("view:hybrid-wp-react-intranet:employee-directory")?.description).toBe(
+      "Placeholder view from Hybrid WordPress + React Intranet. Placeholder — content to be supplied in phase 2.",
+    );
+    expect(getEntryById("doc:headless-wp-educational-app:readme")?.description).toBe(
+      "Project summary for Headless WordPress Educational App. Placeholder — content to be supplied in phase 2.",
+    );
+  });
+
+  it("keeps 'anonymised' out of intranet registry descriptions", () => {
+    // The e2e search test expects 'anonymised' to match only the intranet README body.
+    for (const e of entries.filter((x) => x.projectId === "hybrid-wp-react-intranet")) {
+      expect(e.description, e.id).not.toMatch(/anonymi[sz]ed/i);
+    }
   });
 
   it("references Markdown files that exist, and every Markdown file is registered", () => {

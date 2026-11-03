@@ -40,7 +40,7 @@ Node environment by default; a file that renders React adds `// @vitest-environm
 | --- | --- | --- |
 | Registry and routing | `app/content/registry.test.ts` | unique ids/paths/URLs, expected entry counts, URL mapping, every URL routes to the right module, unknown URLs hit the catch-all, prerender paths, Markdown files exist and are all registered, explorer tree order, breadcrumbs, search sources |
 | View placeholders | `app/content/view-placeholders.test.ts` | copy exists for exactly the non-demo views, is distinct, marked `[Placeholder]` and free of figures |
-| Demos | `app/demos/index.test.ts`, `app/demos/office-booking-calendar/*.test.ts(x)` | demo registry matches the content registry; booking rules, store, announcements |
+| Demos | `app/demos/index.test.ts`, `app/demos/office-booking-calendar/*.test.ts(x)`, `app/demos/{onboarding-wizard,notification-center,interactive-remote-employee-map}/*.test.ts(x)`, `app/fixtures/intranet/intranet.test.ts` | demo registry matches the content registry; rules, stores, announcements and focus; fixture integrity, marker spacing and a sensitivity guard |
 | Markdown | `app/lib/markdown/render.test.ts`, `toc.test.ts` | frontmatter, callouts, GFM, heading ids, TOC, link and table enhancements |
 | Search | `app/lib/search.test.ts` | folding, AND matching, ranking, snippets and highlights |
 | Links and a11y helpers | `app/lib/internal-links.test.ts`, `announce.test.ts`, `stack-lines.test.ts` | client-side link interception, repeatable live-region text, stack JSON lines |
@@ -60,6 +60,9 @@ Chromium only, against the prerendered site served with Netlify-like 404 behavio
 | `docs-views.spec.ts` | Markdown documents (properties, TOC, permalinks, internal links, tables), view pages and the demo frame |
 | `pages-search.spec.ts` | home, about, stack, blog and the search page |
 | `booking.spec.ts` | the office booking demo: table, reservations, announcements, keyboard, persistence, 360px |
+| `onboarding-wizard.spec.ts` | the onboarding demo: prerendered step 1, progress semantics, focus and announcements, completing unlocks the navigation, persistence, keyboard, reduced motion, 360px |
+| `notification-center.spec.ts` | the notification demo: viewer targeting, mark one/all as read, per-viewer read state, kudos validation and success, persistence, keyboard, 360px |
+| `employee-map.spec.ts` | the employee map demo: marker buttons, profile card and focus return, department filter, persistence, keyboard, 360px marker spacing |
 | `contact.spec.ts` | the contact terminal: keyboard flow, validation, announcements, mobile, and no network/storage use |
 | `prerender.spec.ts` | files in `build/client`, text present with JavaScript disabled, `404.html` |
 | `a11y.spec.ts` | axe-core WCAG 2.0/2.1/2.2 A and AA audit |

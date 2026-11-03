@@ -104,6 +104,51 @@ for (const vp of VIEWPORTS) {
       await audit(page, "booking: after reset");
     });
 
+    test("onboarding wizard mid-flow and completed", async ({ page }) => {
+      await page.goto("/portfolio/hybrid-wp-react-intranet/views/onboarding-wizard");
+      const main = page.getByRole("main");
+      await main.getByRole("button", { name: "Next", exact: true }).click();
+      await expect(main.getByRole("heading", { name: "How the intranet is organised" })).toBeFocused();
+      await audit(page, "onboarding: step 2");
+
+      for (let i = 0; i < 3; i++) await main.getByRole("button", { name: "Next", exact: true }).click();
+      await main.getByRole("button", { name: "Complete onboarding" }).click();
+      await expect(main.getByRole("heading", { name: "Onboarding complete" })).toBeFocused();
+      await audit(page, "onboarding: completed");
+    });
+
+    test("notification center: viewer switch, mark read, kudos error and success", async ({ page }) => {
+      await page.goto("/portfolio/hybrid-wp-react-intranet/views/notification-center");
+      const main = page.getByRole("main");
+      await main.locator("#nc-viewer").selectOption("p-lena");
+      await main.getByRole("button", { name: "Mark as read: All-hands call moved to Thursday" }).click();
+      await expect(main.getByRole("status")).toContainText("Marked as read: All-hands call moved to Thursday");
+      await audit(page, "notifications: viewer switched, one marked read");
+
+      await main.getByRole("button", { name: "Send kudos" }).click();
+      await expect(main.locator("#nc-kudos-error")).toBeVisible();
+      await audit(page, "notifications: kudos error");
+
+      await main.locator("#nc-kudos-recipient").selectOption("p-jordan");
+      await main.getByLabel("High Five").check();
+      await main.getByRole("button", { name: "Send kudos" }).click();
+      await expect(main.getByRole("status")).toContainText("Kudos sent: Lena Kowalski gave Jordan Reyes a High Five.");
+      await audit(page, "notifications: kudos sent");
+    });
+
+    test("employee map filtered with an open profile, then reset", async ({ page }) => {
+      await page.goto("/portfolio/hybrid-wp-react-intranet/views/interactive-remote-employee-map");
+      const main = page.getByRole("main");
+      await main.locator("#map-department").selectOption("engineering");
+      await main.getByRole("button", { name: "Priya Raman, Engineering, near Northfield" }).click();
+      await expect(main.getByRole("heading", { name: "Priya Raman" })).toBeFocused();
+      await audit(page, "map: engineering filter with an open profile");
+
+      await main.getByRole("button", { name: "Reset demo" }).click();
+      await expect(main.getByRole("status")).toContainText("Demo reset");
+      await audit(page, "map: after reset");
+    });
+
     test("contact terminal: every step, validation errors, review and completion", async ({ page }) => {
       await page.goto("/");
       await openTerminal(page);
@@ -199,6 +244,9 @@ test.describe("axe: hover and focus states (1440px)", () => {
     ["placeholder view link", `${HYBRID}/views/employee-directory`, (p) => p.getByRole("link", { name: "Back to project README" })],
     ["booking Reset demo", `${HYBRID}/views/office-booking-calendar`, (p) => p.getByRole("button", { name: "Reset demo" })],
     ["booking Reserve", `${HYBRID}/views/office-booking-calendar`, (p) => p.getByRole("button", { name: "Reserve Desk B1 on Tuesday 3 November" })],
+    ["onboarding Next", `${HYBRID}/views/onboarding-wizard`, (p) => p.getByRole("button", { name: "Next", exact: true })],
+    ["notification Mark as read", `${HYBRID}/views/notification-center`, (p) => p.getByRole("button", { name: "Mark as read: All-hands call moved to Thursday" })],
+    ["map marker", `${HYBRID}/views/interactive-remote-employee-map`, (p) => p.getByRole("button", { name: "Avery Lin, Product Design, near Harbor City" })],
     ["search suggestion", "/search", (p) => p.getByRole("main").getByRole("button", { name: "WordPress" })],
     ["search result link", "/search?q=wordpress", (p) => p.getByRole("main").getByRole("list", { name: "Search results" }).getByRole("link").first()],
     ["contact Continue", "/", (p) => p.locator("#terminal-body").getByRole("button", { name: "Continue", exact: true })],

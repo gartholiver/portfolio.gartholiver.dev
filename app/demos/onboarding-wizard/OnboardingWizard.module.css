@@ -1,0 +1,242 @@
+/*
+ * Onboarding wizard panel. Colours come from the demo tokens in app/styles/tokens.css plus a few
+ * panel-local values, all checked for WCAG AA: #ffffff on #2b6cb0 5.2:1 · #8a4b00 on #fff4e5 6.4:1 ·
+ * #566074 on #ffffff 6.3:1. Layout reacts to the container width, not the viewport, because the
+ * explorer sidebar changes the space available to the panel. Motion lives only in the
+ * prefers-reduced-motion: no-preference block at the end.
+ */
+
+.root {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.note,
+.rule {
+  margin: 0;
+  color: var(--color-demo-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+.progressLabel {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-demo-text);
+}
+
+.reset {
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 1px solid #6b7385; /* 4.8:1 on white */
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  color: var(--color-demo-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.reset:hover {
+  background: #eef0f5;
+}
+
+.status {
+  min-height: 1.6em; /* reserve the line so announcements don't shift the layout */
+  margin: -4px 0 0;
+  color: var(--color-demo-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid var(--color-demo-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.track {
+  height: 8px;
+  background: #e4e7ee;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.fill {
+  height: 100%;
+  background: #2b6cb0;
+}
+
+/* Clips the slide and keeps it from widening the page; the padding keeps focus rings visible. */
+.stepViewport {
+  overflow: hidden;
+  padding: 4px;
+  margin: 0 -4px;
+}
+
+.step,
+.complete {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--color-demo-text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.step p,
+.complete p {
+  margin: 0;
+}
+.stepTitle {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--color-demo-text);
+}
+.bullets {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 4px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+.actions button {
+  min-height: 40px;
+  padding: 6px 18px;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.secondary {
+  border: 1px solid #6b7385;
+  background: #ffffff;
+  color: var(--color-demo-text);
+}
+.secondary:hover:not(:disabled) {
+  background: #eef0f5;
+}
+.primary {
+  background: #2b6cb0;
+  color: #ffffff;
+  border: 1px solid #2b6cb0;
+}
+.primary:hover {
+  background: #245d99;
+}
+.actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--color-demo-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+.navHeading {
+  margin: 0;
+  font-size: 15px;
+  color: var(--color-demo-text);
+}
+.navState {
+  margin: 0;
+  color: var(--color-demo-text-muted);
+  font-size: 13px;
+}
+.navList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.navList li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+}
+.navLocked {
+  background: #fff4e5;
+  color: #8a4b00;
+}
+.navOpen {
+  background: var(--color-demo-open-bg);
+  color: var(--color-demo-open-fg);
+}
+.navTag {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@container (max-width: 420px) {
+  .actions button {
+    flex: 1 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .step[data-motion="forward"] {
+    animation: slide-in-forward 200ms ease-out;
+  }
+  .step[data-motion="back"] {
+    animation: slide-in-back 200ms ease-out;
+  }
+  .fill {
+    transition: width 200ms ease;
+  }
+  .reset,
+  .actions button {
+    transition: background-color 120ms ease;
+  }
+}
+
+@keyframes slide-in-forward {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes slide-in-back {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
