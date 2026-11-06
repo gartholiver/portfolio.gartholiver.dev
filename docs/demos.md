@@ -1,6 +1,6 @@
 # Demos
 
-A "view" in a project is either a placeholder panel or a working interactive demo. Both render inside `DemoFrame`, a light application panel inside the dark editor shell. The only demo so far is `office-booking-calendar` (`app/demos/office-booking-calendar/`, fixtures in `app/fixtures/office-booking-calendar.ts`). Use it as the reference implementation.
+A "view" in a project is either a placeholder panel or a working interactive demo. Both render inside `DemoFrame`, a light application panel inside the dark editor shell. There are four demos. `office-booking-calendar` (`app/demos/office-booking-calendar/`, fixtures in `app/fixtures/office-booking-calendar.ts`) is the reference implementation. `onboarding-wizard`, `notification-center` and `interactive-remote-employee-map` share fictional people, teams and messages in `app/fixtures/intranet/`.
 
 ## Register a new demo
 
@@ -30,14 +30,14 @@ Example: turn `employee-directory` (project `hybrid-wp-react-intranet`) into a d
    ```
 
    `component` is required, `description` is the line beside the "Sample data" pill, and `meta` (optional) is the text on the right of the panel header; it defaults to the project title. Imports are static so the prerendered HTML contains the demo.
-4. **Point the view at it** in `app/content/projects.ts` by adding `demoId` to the view (the registry then gives it `kind: "demo"` and `content: { type: "demo", demoId }`):
+4. **Point the view at it** in `app/content/projects.ts` by adding `demoId` to the view (the registry then gives it `kind: "demo"` and `content: { type: "demo", demoId }`). Optionally add `description` (a real one-line description for search and `<meta name="description">`):
 
    ```ts
    { slug: "employee-directory", title: "Employee Directory", demoId: "employee-directory" },
    ```
 
 5. **Remove its placeholder copy** from `viewPlaceholders` in `app/content/view-placeholders.ts`. `view-placeholders.test.ts` fails on stale keys.
-6. **Update counts and docs:** the Type cell in that project's README "Views in this project" table (`Interactive demo (sample data)`), and the hard-coded numbers in `registry.test.ts` (1 demo) and `view-placeholders.test.ts` (16 placeholder views). Run `npm test` and `npm run test:e2e` to find any other count assertions.
+6. **Update counts and docs:** the Type cell in that project's README "Views in this project" table (`Interactive demo (sample data)`), and the hard-coded numbers in `registry.test.ts` (4 demos) and `view-placeholders.test.ts` (15 placeholder views); `e2e/verification.spec.ts` (entries/routes) only changes when views are added. Run `npm test` and `npm run test:e2e` to find any other count assertions.
 7. **Add tests** (below). Nothing in the shell, routes or search changes: routes, explorer, breadcrumbs, search and prerendering all come from the registry.
 
 If a `demoId` has no definition, or a demo entry is left unreferenced, `demos/index.test.ts` fails, and the view loader throws at build time.
@@ -61,6 +61,7 @@ If a `demoId` has no definition, or a demo entry is left unreferenced, `demos/in
 
 - Put synthetic data in `app/fixtures/` (kept apart from the components). It must be fictional: no real people, clients, companies or records.
 - Hard-code dates and values instead of using `new Date()` or `Math.random()`. The prerendered HTML and the first client render must match, or hydration warns (the e2e hydration test fails on console warnings). The booking fixture pins one week for this reason.
+- Data shared by several demos lives in a folder with an `index.ts` (`app/fixtures/intranet/`).
 
 ## State: memory only
 
@@ -82,7 +83,7 @@ If a `demoId` has no definition, or a demo entry is left unreferenced, `demos/in
 
 ## Testing expectations
 
-- **Unit (Vitest):** pure logic (`booking.test.ts`), the store (`store.test.ts`), and component announcements/behaviour with Testing Library (`OfficeBookingCalendar.test.tsx`, which starts with `// @vitest-environment jsdom`). Reset the store in `afterEach`.
+- **Unit (Vitest):** pure logic (`booking.test.ts`), the store (`store.test.ts`), and component announcements/behaviour with Testing Library (`OfficeBookingCalendar.test.tsx`, which starts with `// @vitest-environment jsdom`). Reset the store in `afterEach`. Focus moves only after explicit actions (never on mount or reset); test that too.
 - **E2E (Playwright):** a spec like `e2e/booking.spec.ts` covering prerendered content, keyboard-only use, announcements, persistence across navigation, reload restoring fixtures, and a 360px layout.
 - **Accessibility:** `e2e/a11y.spec.ts` runs axe over every registry route at 1440px and 360px automatically, so a new demo route is audited without changes; add interactive states to it if the demo has meaningful ones.
 

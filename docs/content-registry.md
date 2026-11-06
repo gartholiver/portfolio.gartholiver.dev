@@ -34,6 +34,21 @@ export interface RouteEntry extends EntryBase {
 | `data` | `app/data/{home,profile,stack}.ts` (blog and search have a `key` but no data file) |
 | `action` | no page (contact terminal) |
 
+## Real descriptions
+
+By default every README, technical-requirements document and view gets a generated description ending in the shared placeholder text. Two optional fields in `app/content/projects.ts` replace it with real copy:
+
+- `Project.summary?` is a real one-line project summary.
+- `ProjectView.description?` is a real one-line view description.
+
+The formulas live in three exported helpers in `registry.ts`:
+
+- README description = `project.summary`, otherwise `Project summary for ${title}. ${PLACEHOLDER}`.
+- Technical-requirements description = `Technical requirements for ${title}. ${project.summary}`, otherwise `Technical requirements for ${title}. ${PLACEHOLDER}` (`describeReadme`, `describeTechnicalRequirements`).
+- View description = `view.description`, otherwise the generated demo or placeholder line (`describeView`).
+
+`hybrid-wp-react-intranet` uses both (with `status: "final"`); the other projects keep the generated text. Keep this copy anonymised: no client or agency names, outcomes or metrics.
+
 ## IDs and URL mapping
 
 | Explorer entry | Entry id | URL | Kind |
@@ -71,7 +86,7 @@ Folder names double as URL slugs (`project.id === project.folder`). A view slug 
 2. `content/projects/<id>/README.md` and `content/projects/<id>/technical-requirements.md` (see [markdown-conventions.md](markdown-conventions.md)). The build fails if a registered file is missing; `registry.test.ts` also fails if a Markdown file is not registered.
 3. `app/data/home.ts`: add the project to `projectBlurbs` (typed `satisfies Record<ProjectId, string>`, so typecheck fails until you do).
 4. `app/content/view-placeholders.ts`: one entry per non-demo view, keyed `view:<project>:<slug>`.
-5. Update hard-coded counts in `app/content/registry.test.ts` (views, docs, total entries), `app/content/view-placeholders.test.ts` (16 placeholder views) and `e2e/verification.spec.ts` (31 entries, 30 routes).
+5. Update hard-coded counts in `app/content/registry.test.ts` (views, docs, total entries), `app/content/view-placeholders.test.ts` (15 placeholder views) and `e2e/verification.spec.ts` (33 entries, 32 routes).
 
 Routes, prerender paths, explorer entries, breadcrumbs and search all follow automatically.
 

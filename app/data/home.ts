@@ -2,7 +2,8 @@ import type { ProjectId } from "~/content/projects";
 
 /**
  * Home page copy. Anything marked "[Placeholder]" is not final; the four project links come from
- * the registry, the short descriptions below are placeholders keyed by project id.
+ * the registry, the short descriptions below are placeholders keyed by project id, except
+ * hybrid-wp-react-intranet, which is final.
  */
 const NUMBER_WORDS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
 
@@ -21,11 +22,11 @@ export const home = {
   introNote:
     "This site is laid out like a code editor: a file explorer, open documents, and a small terminal. The case studies, sample-data demos and contact flow are all explorable files.",
   placeholderCallout:
-    "The introduction and project descriptions are placeholders. Final copy will be supplied in phase 2. No client names, outcomes or metrics are stated anywhere on this site yet.",
+    "The introduction and most project descriptions are placeholders. Final copy will be supplied in phase 2. No client names, outcomes or metrics are stated anywhere on this site.",
   projectsIntro: "Four case studies. Each has a README (overview), technical requirements, and example views.",
   projectBlurbs: {
     "hybrid-wp-react-intranet":
-      "[Placeholder] One-sentence summary of this WordPress + React intranet project, to be supplied.",
+      "An intranet for a healthcare-sector company with a large remote workforce: a React app built into a WordPress theme, with onboarding, targeted notifications, a staff map and office booking.",
     "headless-wp-educational-app":
       "[Placeholder] One-sentence summary of this headless WordPress educational app, to be supplied.",
     "legal-doc-wp-ordering-system":

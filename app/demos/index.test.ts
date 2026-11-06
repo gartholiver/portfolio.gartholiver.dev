@@ -3,11 +3,19 @@ import { DEMO_IDS, getDemo } from "./index";
 import { routeEntries } from "~/content/registry";
 
 describe("demo registry", () => {
-  it("resolves office-booking-calendar to a component", () => {
-    const demo = getDemo("office-booking-calendar");
-    expect(demo).toBeDefined();
-    expect(typeof demo?.component).toBe("function");
-    expect(demo?.description).toBeTruthy();
+  it.each(["office-booking-calendar", "onboarding-wizard", "notification-center", "interactive-remote-employee-map"])(
+    "resolves %s to a component",
+    (id) => {
+      const demo = getDemo(id);
+      expect(demo).toBeDefined();
+      expect(typeof demo?.component).toBe("function");
+      expect(demo?.description).toBeTruthy();
+      expect(demo?.description).toMatch(/nothing is saved/);
+    },
+  );
+
+  it("registers exactly four demos", () => {
+    expect(DEMO_IDS).toHaveLength(4);
   });
 
   it("returns undefined for unknown ids (including Object.prototype keys)", () => {

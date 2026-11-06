@@ -5,7 +5,7 @@
  * (react-router.config.ts) and the search index. Keep it free of Vite-only imports
  * (no `?raw`, CSS or import.meta.glob) so it can be loaded by the React Router config.
  */
-import { projects, type ProjectId } from "./projects";
+import { projects, type Project, type ProjectId, type ProjectView } from "./projects";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -119,6 +119,28 @@ export interface SearchSource {
 
 const PLACEHOLDER = "Placeholder — content to be supplied in phase 2.";
 
+/** README description: the real summary when supplied, otherwise the placeholder text. */
+export function describeReadme(project: Pick<Project, "title" | "summary">): string {
+  return project.summary ?? `Project summary for ${project.title}. ${PLACEHOLDER}`;
+}
+
+/** Technical-requirements description: built on the real summary when supplied. */
+export function describeTechnicalRequirements(project: Pick<Project, "title" | "summary">): string {
+  return project.summary
+    ? `Technical requirements for ${project.title}. ${project.summary}`
+    : `Technical requirements for ${project.title}. ${PLACEHOLDER}`;
+}
+
+/** View description: the authored description, else the generated demo/placeholder line. */
+export function describeView(project: Pick<Project, "title">, view: Pick<ProjectView, "demoId" | "description">): string {
+  return (
+    view.description ??
+    (view.demoId
+      ? `Interactive sample-data demo from ${project.title}.`
+      : `Placeholder view from ${project.title}. ${PLACEHOLDER}`)
+  );
+}
+
 function projectEntries(): RegistryEntry[] {
   return projects.flatMap((project): RegistryEntry[] => {
     const base = `portfolio/${project.folder}`;
@@ -131,9 +153,7 @@ function projectEntries(): RegistryEntry[] {
       url: `/portfolio/${project.id}/views/${view.slug}`,
       projectId: project.id,
       tags: project.tags,
-      description: view.demoId
-        ? `Interactive sample-data demo from ${project.title}.`
-        : `Placeholder view from ${project.title}. ${PLACEHOLDER}`,
+      description: describeView(project, view),
       content: view.demoId ? { type: "demo", demoId: view.demoId } : { type: "view-placeholder" },
     }));
     return [
@@ -147,7 +167,7 @@ function projectEntries(): RegistryEntry[] {
         url: `/portfolio/${project.id}`,
         projectId: project.id,
         tags: project.tags,
-        description: `Project summary for ${project.title}. ${PLACEHOLDER}`,
+        description: describeReadme(project),
         content: { type: "markdown", file: `projects/${project.id}/README.md`, docType: "readme" },
       },
       {
@@ -159,7 +179,7 @@ function projectEntries(): RegistryEntry[] {
         url: `/portfolio/${project.id}/technical-requirements`,
         projectId: project.id,
         tags: project.tags,
-        description: `Technical requirements for ${project.title}. ${PLACEHOLDER}`,
+        description: describeTechnicalRequirements(project),
         content: {
           type: "markdown",
           file: `projects/${project.id}/technical-requirements.md`,

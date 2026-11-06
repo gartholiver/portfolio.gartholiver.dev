@@ -64,9 +64,9 @@ test.describe("every explorer entry (1440px)", () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
   test("the registry has the expected shape", () => {
-    expect(entries.length).toBe(31);
+    expect(entries.length).toBe(33);
     expect(entries.filter(isActionEntry)).toHaveLength(1);
-    expect(routeEntries).toHaveLength(30);
+    expect(routeEntries).toHaveLength(32);
     // README.md / technical-requirements.md / custom-woo-extension-plugin.html all repeat across projects
     const labels = entries.map((e) => e.label);
     expect(labels.filter((l) => l === "README.md")).toHaveLength(projects.length);
@@ -419,6 +419,9 @@ test.describe("keyboard focus is always visible", () => {
     [HYBRID, 1440],
     [`${HYBRID}/views/office-booking-calendar`, 1440],
     [`${HYBRID}/views/employee-directory`, 1440],
+    [`${HYBRID}/views/onboarding-wizard`, 1440],
+    [`${HYBRID}/views/notification-center`, 1440],
+    [`${HYBRID}/views/interactive-remote-employee-map`, 1440],
     ["/search?q=wordpress", 1440],
     ["/stack", 1440],
     ["/docs/about", 1440],
@@ -509,7 +512,15 @@ test.describe("reduced motion", () => {
 
   test("desktop shell, markdown, TOC and demo have no real transitions or animations (1440px)", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    for (const path of ["/", HYBRID, `${HYBRID}/views/office-booking-calendar`, "/search?q=wordpress"]) {
+    for (const path of [
+      "/",
+      HYBRID,
+      `${HYBRID}/views/office-booking-calendar`,
+      `${HYBRID}/views/onboarding-wizard`,
+      `${HYBRID}/views/notification-center`,
+      `${HYBRID}/views/interactive-remote-employee-map`,
+      "/search?q=wordpress",
+    ]) {
       await page.goto(path);
       await expect(h1(page)).toBeVisible();
       expect(await motion(page), path).toMatchObject({ offenders: [], running: 0 });

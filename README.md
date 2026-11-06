@@ -4,7 +4,7 @@ Editor-styled portfolio for Garth Oliver: a file explorer, open documents, light
 
 - **Stack:** React Router v8 (Framework Mode) + Vite, TypeScript, CSS Modules.
 - **Output:** fully static. `ssr: false` plus a `prerender` list means every route is built to HTML at build time and published from `build/client`.
-- **Status:** phase 1. The shell, registry, Markdown pipeline, search, one working demo (`office-booking-calendar`) and the contact demo are done. All case-study text is placeholder copy and the site is `noindex`. See [docs/phase-2-content-needs.md](docs/phase-2-content-needs.md) for what phase 2 must supply.
+- **Status:** phase 1. The shell, registry, Markdown pipeline, search, four working demos (`office-booking-calendar`, `onboarding-wizard`, `notification-center`, `interactive-remote-employee-map`) and the contact demo are done. The `hybrid-wp-react-intranet` case study is written; all other case-study text is placeholder copy and the site is `noindex`. See [docs/phase-2-content-needs.md](docs/phase-2-content-needs.md) for what phase 2 must supply.
 
 ## Requirements
 

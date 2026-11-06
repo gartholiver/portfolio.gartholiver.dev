@@ -1,7 +1,8 @@
 /**
  * Copy for the placeholder view panels, keyed by registry entry id (`view:<project>:<slug>`).
- * One entry per non-demo view in app/content/projects.ts. Statements are deliberately generic and
- * derived from the view's name only — no invented workflows, features, clients or metrics.
+ * One entry per non-demo view in app/content/projects.ts. Statements are generic unless the project has
+ * been reviewed (the intranet's two remaining panels describe the real feature) — no invented
+ * workflows, features, clients or metrics.
  * Everything is marked "[Placeholder]" until the real content is supplied in phase 2.
  */
 
@@ -21,17 +22,13 @@ export const viewPlaceholderCommon = {
 
 export const viewPlaceholders: Readonly<Record<string, ViewPlaceholder>> = {
   // hybrid-wp-react-intranet
-  "view:hybrid-wp-react-intranet:interactive-remote-employee-map": {
-    summary:
-      "[Placeholder] This panel will present an illustrative interactive map of remote employees, built from fictional people and locations.",
-  },
   "view:hybrid-wp-react-intranet:employee-directory": {
     summary:
-      "[Placeholder] This panel will present an illustrative employee directory, built from fictional staff records.",
+      "[Placeholder] This panel will present the intranet's employee directory: staff profiles searchable by name, department and team, each showing a person's title, manager and direct reports. It will be rebuilt with fictional staff.",
   },
   "view:hybrid-wp-react-intranet:documentation-system": {
     summary:
-      "[Placeholder] This panel will present an illustrative documentation system, built from fictional sample documents.",
+      "[Placeholder] This panel will present the intranet's documentation system: support and training documents grouped by category, searchable, and shown only to the roles allowed to see them. It will be rebuilt with fictional documents.",
   },
 
   // headless-wp-educational-app

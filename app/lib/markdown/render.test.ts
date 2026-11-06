@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { renderMarkdown } from "./render";
 import { loadMarkdown } from "~/content/markdown.server";
-import { routeEntries } from "~/content/registry";
+import { getProject, routeEntries } from "~/content/registry";
 import { findLinkProblems } from "~/content/validate-links";
 
 describe("renderMarkdown", () => {
@@ -172,9 +172,9 @@ line *two* ends.
 describe("project Markdown content", () => {
   const docs = routeEntries.flatMap((e) => (e.content.type === "markdown" ? [{ entry: e, file: e.content.file }] : []));
 
-  it.each(docs.map((d) => [d.file, d] as const))("%s is well-formed placeholder content", (_file, { file }) => {
+  it.each(docs.map((d) => [d.file, d] as const))("%s is well-formed content", (_file, { entry, file }) => {
     const doc = loadMarkdown(file);
-    expect(doc.frontmatter.status).toBe("placeholder");
+    expect(doc.frontmatter.status).toBe(getProject(entry.projectId!)!.status === "final" ? "published" : "placeholder");
     expect(doc.frontmatter.title).toBeTruthy();
     expect(doc.toc.filter((t) => t.depth === 2).length).toBeGreaterThanOrEqual(3);
     expect(doc.toc.some((t) => t.depth === 3)).toBe(true);

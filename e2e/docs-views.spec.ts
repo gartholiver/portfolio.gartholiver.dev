@@ -44,14 +44,18 @@ test.describe("Markdown documents (desktop)", () => {
 
     const props = page.getByRole("list", { name: "Document properties" }).or(page.locator('dl[aria-label="Document properties"]'));
     await expect(props).toContainText("case study");
-    await expect(props).toContainText("[Placeholder] Role to be supplied");
-    for (const tag of ["WordPress", "React", "Intranet"]) await expect(props.getByText(tag, { exact: true })).toBeVisible();
-    await expect(props.getByText("placeholder", { exact: true })).toBeVisible();
+    await expect(props).toContainText("Sole developer");
+    for (const tag of ["WordPress", "React", "Redux Toolkit"]) await expect(props.getByText(tag, { exact: true })).toBeVisible();
+    await expect(props.getByText("published", { exact: true })).toBeVisible();
 
     // metadata → h1 → summary, and the TOC is NOT above the h1
     const h1 = content(page).getByRole("heading", { level: 1, name: "Hybrid WordPress + React Intranet" });
     await expect(h1).toBeVisible();
-    await expect(content(page).getByText("[Placeholder] One-sentence project summary to be supplied.")).toBeVisible();
+    await expect(
+      content(page).getByText(
+        "One place for a remote workforce to connect: a React single-page app built into a WordPress theme, with onboarding, targeted notifications, a staff map, office booking and role-based access.",
+      ),
+    ).toBeVisible();
     const y = async (loc: ReturnType<Page["locator"]>) => (await loc.boundingBox())!.y;
     expect(await y(props)).toBeLessThan(await y(h1));
 
@@ -64,8 +68,10 @@ test.describe("Markdown documents (desktop)", () => {
     await content(page).evaluate((m) => (m.scrollTop = 700));
     await expect(toc).toBeInViewport();
 
-    // callout styled by type
-    await expect(content(page).locator('aside.callout[data-callout="placeholder"]')).toBeVisible();
+    // callouts styled by type (the views note and the Lessons learned status note); no placeholder left
+    await expect(content(page).locator('aside.callout[data-callout="note"]')).toHaveCount(2);
+    await expect(content(page).locator('aside.callout[data-callout="note"]').last()).toContainText("waiting on budget");
+    await expect(content(page).locator('aside.callout[data-callout="placeholder"]')).toHaveCount(0);
     expect(errors).toEqual([]);
   });
 
@@ -167,8 +173,8 @@ test.describe("Markdown documents (desktop)", () => {
 
   test("prerendered HTML contains the document text without JavaScript", async ({ request }) => {
     for (const [url, text, id] of [
-      [HYBRID, "A short, anonymised description of what this project is and who it serves.", "overview"],
-      [TECH, "Hosting, platform and application structure.", "architecture"],
+      [HYBRID, "This case study is anonymised: the company is described only by its sector, and every person, place and message in the demos is fictional.", "overview"],
+      [TECH, "A single WordPress install on managed WordPress hosting serves both the content and the application.", "architecture"],
     ] as const) {
       const res = await request.get(url);
       expect(res.ok()).toBe(true);
@@ -206,7 +212,8 @@ test.describe("tables at 360px", () => {
   for (const url of [TECH, HYBRID]) {
     test(`wide tables scroll inside their own region on ${url}`, async ({ page }) => {
       await page.goto(url);
-      const region = content(page).getByRole("region", { name: /^Table:/ }).first();
+      // the widest table is the last one on both documents (the first table of the technical requirements is narrow)
+      const region = content(page).getByRole("region", { name: /^Table:/ }).last();
       await region.scrollIntoViewIfNeeded();
       const m = await region.evaluate((el) => ({ sw: el.scrollWidth, cw: el.clientWidth, ov: getComputedStyle(el).overflowX }));
       expect(m.ov).toBe("auto");

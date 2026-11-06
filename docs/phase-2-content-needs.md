@@ -10,24 +10,28 @@ Per project, in `content/projects/<id>/`. See [markdown-conventions.md](markdown
 
 | Project id | `README.md` | `technical-requirements.md` |
 | --- | --- | --- |
-| `hybrid-wp-react-intranet` | [ ] | [ ] |
+| `hybrid-wp-react-intranet` | [x] | [x] |
 | `headless-wp-educational-app` | [ ] | [ ] |
 | `legal-doc-wp-ordering-system` | [ ] | [ ] |
 | `multi-location-inventory-sales-system` | [ ] | [ ] |
 
 README placeholders: `role`, `summary`, Overview (problem, approach), My role, Features highlights (3), Lessons learned. Technical-requirements placeholders: Architecture (platform, integrations), the Requirements table (all rows `[Placeholder]` / `Pending`), Data model, Performance, Accessibility. Also update the "Views in this project" Type column when views change.
 
-Also in the registry (`app/content/registry.ts`): the shared `PLACEHOLDER` suffix ("Placeholder — content to be supplied in phase 2.") is appended to the `description` of every README, technical-requirements, placeholder view and the About entry. These descriptions feed `<meta name="description">` and search; replace them with real one-line descriptions. In `app/content/projects.ts`, each project has `status: "placeholder"` (type `"placeholder" | "final"`; not read anywhere yet), and the titles were derived from folder names only: confirm or rewrite titles and `tags` once the projects are reviewed.
+`hybrid-wp-react-intranet` README → [x] Lessons learned approved. Its status note says the refactor is proposed and waiting on budget; update it (and the intro paragraph) as refactor phases ship.
 
-## 2. The 16 placeholder views
+Also in the registry (`app/content/registry.ts`): the shared `PLACEHOLDER` suffix ("Placeholder — content to be supplied in phase 2.") is appended to the `description` of every README, technical-requirements, placeholder view and the About entry. These descriptions feed `<meta name="description">` and search; replace them with real one-line descriptions. `Project.summary` and `ProjectView.description` (in `app/content/projects.ts`) replace those generated descriptions with real ones; the intranet uses them and has `status: "final"`. Each other project has `status: "placeholder"` (type `"placeholder" | "final"`; read by the Markdown frontmatter test), and the titles were derived from folder names only: confirm or rewrite titles and `tags` once the projects are reviewed.
+
+## 2. The 15 placeholder views
 
 Each is an explorer view that currently shows a generic panel from `app/content/view-placeholders.ts`. For each, either build a demo with fictional data (see [demos.md](demos.md)) or write real, specific copy, then remove or replace its placeholder summary. Also update the shared wording in `viewPlaceholderCommon` (for example "Coming after the project is reviewed.") if any panels remain.
 
-`hybrid-wp-react-intranet` (3 placeholders; `office-booking-calendar` is already a demo):
+`hybrid-wp-react-intranet` (2 placeholders; `office-booking-calendar`, `onboarding-wizard`, `notification-center` and `interactive-remote-employee-map` are demos):
 
-- [ ] `interactive-remote-employee-map`
-- [ ] `employee-directory`
-- [ ] `documentation-system`
+- [x] `interactive-remote-employee-map` (now a demo)
+- [ ] `employee-directory` (summary describes the real feature; still a placeholder)
+- [ ] `documentation-system` (same)
+
+Also new demos: `onboarding-wizard`, `notification-center`.
 
 `headless-wp-educational-app`:
 
@@ -51,13 +55,13 @@ Each is an explorer view that currently shows a generic panel from `app/content/
 - [ ] `user-profile-completion-wizard`
 - [ ] `location-gated-products`
 
-The existing demo, `office-booking-calendar`, uses fictional data by design (week of 2 Nov 2026); review whether it matches the real project once evidence is supplied.
+[ ] `office-booking-calendar` rework: the real feature booked meeting rooms against Google Calendar through a service account and a Gravity Forms request; the demo still shows fictional desk booking.
 
 ## 3. Home (`app/data/home.ts`, `app/components/pages/HomePage.tsx`)
 
 - [ ] `intro` ("[Placeholder] A short portfolio introduction...")
 - [ ] `placeholderCallout` and the placeholder callout in `HomePage.tsx`; remove both when content is final
-- [ ] `projectBlurbs`: one sentence per project (4 entries)
+- [ ] `projectBlurbs`: one sentence per project (hybrid-wp-react-intranet done; 3 remaining)
 - [ ] Review `introNote`, `projectsIntro`, `exploreSteps` and `contactBody`: they describe the demo contact terminal and the placeholder panels and will go stale
 - [ ] `HomePage.tsx` shows a hard-coded "status: placeholder content" line and builds the card text "N interactive demo(s)" (singular/plural by count). The "Try the views" step in `exploreSteps` derives its demo sentence from the number of `demo` entries in the registry, so it needs no edit when demos are added
 
