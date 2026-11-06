@@ -46,8 +46,8 @@ export const home = {
         `Files in each views folder are example screens built with made-up sample data. ${describeDemos(demoCount)}`,
     },
     {
-      title: "Open contact.bash",
-      body: "In the docs folder, contact.bash opens a small terminal below the page that asks a few questions. It is a demo: nothing is sent.",
+      title: "Open contact.me",
+      body: "In the docs folder, contact.me opens a small terminal below the page that asks a few questions. It is a demo: nothing is sent.",
     },
     {
       title: "Search or read the stack",

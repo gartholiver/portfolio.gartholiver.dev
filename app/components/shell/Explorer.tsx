@@ -8,7 +8,8 @@ import {
   type ExplorerNode,
   type RegistryEntry,
 } from "~/content/registry";
-import { getFileIconKind, getInitialExpanded, revealEntry, toggleFolder, type ExpandedFolders } from "./explorer-state";
+import { FileIcon } from "~/components/icons/FileIcon";
+import { getFileIconKind, getFolderIconKind, getInitialExpanded, revealEntry, toggleFolder, type ExpandedFolders } from "./explorer-state";
 import { useShell } from "./ShellContext";
 import styles from "./Explorer.module.css";
 
@@ -25,10 +26,6 @@ function Chevron({ expanded }: { expanded: boolean }) {
       <path d="M3 1.5 6.5 5 3 8.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
-}
-
-function Dot({ kind }: { kind: ReturnType<typeof getFileIconKind> | "folder" }) {
-  return <span className={styles.dot} data-kind={kind} aria-hidden="true" />;
 }
 
 interface BranchProps {
@@ -59,7 +56,7 @@ function FolderItem({ node, ...rest }: BranchProps & { node: ExplorerFolder }) {
         <span className={styles.chevronSlot}>
           <Chevron expanded={isExpanded} />
         </span>
-        <Dot kind="folder" />
+        <FileIcon kind={getFolderIconKind(node.name, node.path)} open={isExpanded} />
         <span className={styles.label}>{node.name}</span>
       </button>
       <ul id={id} role="list" className={styles.list} hidden={!isExpanded}>
@@ -92,7 +89,7 @@ function FileItem({ node, level, activeId, activeRef, onNavigate, onOpenContact 
           onClick={onOpenContact}
         >
           <span className={styles.chevronSlot} />
-          <Dot kind={iconKind} />
+          <FileIcon kind={iconKind} />
           <span className={styles.label}>{node.name}</span>
           <span className="sr-only"> (opens the contact terminal)</span>
         </button>
@@ -114,7 +111,7 @@ function FileItem({ node, level, activeId, activeRef, onNavigate, onOpenContact 
         onClick={onNavigate}
       >
         <span className={styles.chevronSlot} />
-        <Dot kind={iconKind} />
+        <FileIcon kind={iconKind} />
         <span className={styles.label}>{node.name}</span>
       </Link>
     </li>

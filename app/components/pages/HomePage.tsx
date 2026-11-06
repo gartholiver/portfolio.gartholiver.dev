@@ -97,7 +97,7 @@ export function HomePage() {
             Open contact terminal
           </button>
           <p id="home-contact-note" className={styles.contactNote}>
-            Same as opening <code>contact.bash</code> in the docs folder.
+            Same as opening <code>contact.me</code> in the docs folder.
           </p>
         </div>
       </section>

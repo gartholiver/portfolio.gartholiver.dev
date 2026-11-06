@@ -26,20 +26,45 @@ export function toggleFolder(expanded: ExpandedFolders, id: string): ExpandedFol
   return next;
 }
 
-export type FileIconKind = "md" | "html" | "json" | "tsx" | "bash" | "default";
+export type FileIconKind = "md" | "readme" | "html" | "json" | "npm" | "tsx" | "terminal" | "default";
+export type FolderIconKind = "folder" | "folder-docs" | "folder-views" | "folder-project";
+export type IconKind = FileIconKind | FolderIconKind;
 
-/** Icon dot colour key from a filename extension. */
+/** File-type icon (see `FileIcon`) from a filename: extension first, a few well-known names win. */
 export function getFileIconKind(filename: string): FileIconKind {
-  const ext = filename.includes(".") ? filename.slice(filename.lastIndexOf(".") + 1).toLowerCase() : "";
+  const name = filename.toLowerCase();
+  if (name === "package.json") return "npm";
+  if (name === "readme.md") return "readme";
+  const ext = name.includes(".") ? name.slice(name.lastIndexOf(".") + 1) : "";
   switch (ext) {
     case "md":
     case "html":
     case "json":
     case "tsx":
-    case "bash":
       return ext;
+    case "bash":
+    case "sh":
+    case "me": // contact.me opens the contact terminal
+      return "terminal";
     default:
       return "default";
+  }
+}
+
+/**
+ * Folder icon from a folder name and (optionally) its full path: themed icons for `docs` and `views`,
+ * the project icon for any direct child of `portfolio` (a case-study project folder), the generic folder otherwise.
+ */
+export function getFolderIconKind(name: string, path?: string): FolderIconKind {
+  const segments = path?.split("/").filter(Boolean);
+  if (segments && segments.length === 2 && segments[0] === "portfolio") return "folder-project";
+  switch (name.toLowerCase()) {
+    case "docs":
+      return "folder-docs";
+    case "views":
+      return "folder-views";
+    default:
+      return "folder";
   }
 }
 

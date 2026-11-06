@@ -11,7 +11,7 @@ import {
   type RefObject,
 } from "react";
 
-/** Below this width the explorer becomes a drawer and the terminal starts collapsed. */
+/** Below this width the explorer becomes a drawer. */
 export const DRAWER_BREAKPOINT = 900;
 const DRAWER_QUERY = `(max-width: ${DRAWER_BREAKPOINT - 0.02}px)`;
 
@@ -20,7 +20,7 @@ export type DrawerFocusTarget = "trigger" | "content";
 export interface ShellContextValue {
   /** Effective expanded state of the contact terminal panel. */
   terminalOpen: boolean;
-  /** True until the user (or `openContact`) explicitly opens/collapses it; CSS uses this before hydration. */
+  /** True until the user (or `openContact`) explicitly opens/collapses it. */
   terminalIsDefault: boolean;
   /** Explicitly open or collapse the terminal. Overrides the viewport-based default. */
   setTerminalOpen: (open: boolean) => void;
@@ -66,9 +66,9 @@ export function useIsDrawerLayout(): boolean {
 export function ShellProvider({ children }: { children: ReactNode }) {
   const isDrawerLayout = useIsDrawerLayout();
 
-  // `null` = no explicit choice yet → open on desktop, collapsed below the drawer breakpoint.
+  // `null` = no explicit choice yet → the terminal starts collapsed on every viewport (also in the prerendered HTML).
   const [terminalChoice, setTerminalChoice] = useState<boolean | null>(null);
-  const terminalOpen = terminalChoice ?? !isDrawerLayout;
+  const terminalOpen = terminalChoice ?? false;
   const [contactFocusRequest, setContactFocusRequest] = useState(0);
 
   const [drawerOpenState, setDrawerOpenState] = useState(false);

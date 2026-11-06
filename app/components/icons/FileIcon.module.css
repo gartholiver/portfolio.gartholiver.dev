@@ -1,0 +1,7 @@
+/* 16px file-type icon, centred on the label's line box. Colours come from the icon set. */
+.icon {
+  display: block;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}

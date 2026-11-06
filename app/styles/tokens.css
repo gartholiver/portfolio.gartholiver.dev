@@ -35,15 +35,9 @@
   --color-focus: var(--color-accent);
   --color-focus-on-accent: #ffffff;
 
-  /* syntax / file types */
+  /* syntax */
   --color-syntax-key: #5fc7b8;
   --color-syntax-string: #e5b567;
-  --color-filetype-folder: #5d6575;
-  --color-filetype-md: #7cc4ff;
-  --color-filetype-html: #f0a064;
-  --color-filetype-json: #e5b567;
-  --color-filetype-tsx: #5fc7b8;
-  --color-filetype-bash: #7fe0c4;
 
   /* status */
   --color-success: #7fe0c4;
@@ -70,8 +64,9 @@
   --size-titlebar: 37px; /* 36 + 1px border */
   --size-explorer: 280px;
   --size-explorer-drawer: min(300px, 88vw);
-  --size-fileheader: 37px; /* matches the prototype tab strip */
-  --size-terminal: 210px;
+  --size-fileheader: 37px; /* tab row; matches the prototype tab strip */
+  --size-breadcrumbs: 24px; /* VS Code-style breadcrumb bar under the tab row */
+  --size-terminal: 252px;
   --size-terminal-header: 34px;
   --size-statusbar: 24px;
   --explorer-indent: 14px; /* per level; base padding-left 12px */

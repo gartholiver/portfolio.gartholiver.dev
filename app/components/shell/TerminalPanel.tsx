@@ -46,7 +46,7 @@ export function TerminalPanel() {
           <svg className={styles.chevron} width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
             <path d="M1.5 3 5 6.5 8.5 3" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span>Terminal · contact.bash</span>
+          <span>Terminal · contact.me</span>
         </button>
       </h2>
       <div id={BODY_ID} ref={bodyRef} className={styles.body} hidden={!terminalOpen} tabIndex={0}>

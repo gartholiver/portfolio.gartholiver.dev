@@ -77,25 +77,9 @@
   display: none;
 }
 
-/*
- * Below the drawer breakpoint the terminal starts collapsed. Before the user makes a choice this
- * is handled in CSS so the prerendered (desktop-state) HTML doesn't flash open on phones; after
- * hydration the state matches (aria-expanded=false, body hidden).
- */
+/* The terminal starts collapsed everywhere (prerendered HTML included); on narrow screens an opened panel is capped. */
 @media (max-width: 899.98px) {
   .panel[data-open="true"] {
     height: min(var(--size-terminal), 45dvh);
-  }
-  .panel[data-default="true"][data-open="true"] {
-    height: auto;
-  }
-  .panel[data-default="true"][data-open="true"] .body {
-    display: none;
-  }
-  .panel[data-default="true"][data-open="true"] .heading {
-    border-bottom: 0;
-  }
-  .panel[data-default="true"][data-open="true"] .chevron {
-    transform: rotate(-90deg);
   }
 }

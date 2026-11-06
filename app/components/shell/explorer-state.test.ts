@@ -4,6 +4,7 @@ import {
   DEFAULT_EXPANDED_FOLDERS,
   describeKind,
   getFileIconKind,
+  getFolderIconKind,
   getInitialExpanded,
   revealEntry,
   toggleFolder,
@@ -84,16 +85,46 @@ describe("toggleFolder", () => {
 
 describe("getFileIconKind", () => {
   it.each([
-    ["README.md", "md"],
+    ["README.md", "readme"],
+    ["technical-requirements.md", "md"],
     ["office-booking-calendar.html", "html"],
-    ["package.json", "json"],
+    ["package.json", "npm"],
+    ["data.json", "json"],
     ["search.tsx", "tsx"],
-    ["contact.bash", "bash"],
+    ["contact.bash", "terminal"],
+    ["contact.me", "terminal"],
     ["INDEX.HTML", "html"],
     ["Makefile", "default"],
     ["archive.zip", "default"],
   ])("%s → %s", (name, kind) => {
     expect(getFileIconKind(name)).toBe(kind);
+  });
+
+  it("maps every file in the registry to a known icon", () => {
+    for (const entry of entries) expect(getFileIconKind(entry.label)).not.toBe("default");
+  });
+});
+
+describe("getFolderIconKind", () => {
+  it.each([
+    ["docs", "folder-docs"],
+    ["views", "folder-views"],
+    ["portfolio", "folder"],
+    ["hybrid-wp-react-intranet", "folder"],
+  ])("%s → %s (name only)", (name, kind) => {
+    expect(getFolderIconKind(name)).toBe(kind);
+  });
+
+  it.each([
+    ["portfolio", "portfolio", "folder"],
+    ["hybrid-wp-react-intranet", "portfolio/hybrid-wp-react-intranet", "folder-project"],
+    ["some-future-project", "portfolio/some-future-project", "folder-project"],
+    ["docs", "portfolio/hybrid-wp-react-intranet/docs", "folder-docs"],
+    ["views", "portfolio/hybrid-wp-react-intranet/views", "folder-views"],
+    ["other", "portfolio/hybrid-wp-react-intranet/other", "folder"],
+    ["docs", "docs", "folder-docs"],
+  ])("%s at %s → %s", (name, path, kind) => {
+    expect(getFolderIconKind(name, path)).toBe(kind);
   });
 });
 

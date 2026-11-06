@@ -21,6 +21,14 @@ async function expectActiveIn(locator: Locator) {
   await expect(locator).toBeFocused();
 }
 
+/** The terminal starts collapsed; open it from the status bar. */
+async function openTerminal(page: Page) {
+  const toggle = page.getByRole("contentinfo").getByRole("button", { name: "Terminal" });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+  await expect(body(page)).toBeVisible();
+}
+
 async function inView(page: Page, target: Locator) {
   const container = (await body(page).boundingBox())!;
   const box = (await target.boundingBox())!;
@@ -33,7 +41,7 @@ test.describe("contact terminal (desktop)", () => {
 
   test("keyboard-only flow with validation, announcements and zero network requests", async ({ page }) => {
     await page.goto("/");
-    await expect(body(page)).toBeVisible();
+    await openTerminal(page);
     await expect(body(page)).toContainText("Demo — nothing is sent");
     const requests = recordRequests(page);
 
@@ -116,6 +124,7 @@ test.describe("contact terminal (desktop)", () => {
 
   test("Continue buttons, Back, edit from review and Restart", async ({ page }) => {
     await page.goto("/");
+    await openTerminal(page);
     const requests = recordRequests(page);
 
     await expect(button(page, "Continue")).toBeVisible();
@@ -190,6 +199,7 @@ test.describe("contact terminal (desktop)", () => {
 
   test("the draft survives navigation and collapsing/expanding the terminal", async ({ page }) => {
     await page.goto("/stack");
+    await openTerminal(page);
     await input(page).fill("Ada");
     await button(page, "Continue").click();
     await input(page).fill("half-typed@exam"); // uncommitted text is kept too
@@ -227,6 +237,7 @@ test.describe("contact terminal (desktop)", () => {
 
   test("nothing can be submitted: no form actions, Netlify Forms, storage or non-GET requests", async ({ page }) => {
     await page.goto("/");
+    await openTerminal(page);
     await expect(page.locator("form[action], form[data-netlify], [data-netlify], input[name='form-name']")).toHaveCount(0);
     const requests = recordRequests(page);
     page.on("dialog", (dialog) => dialog.dismiss());
@@ -247,6 +258,7 @@ test.describe("contact terminal (desktop)", () => {
 
   test("shows a visible focus indicator on the input", async ({ page }) => {
     await page.goto("/");
+    await openTerminal(page);
     await input(page).focus();
     const outline = await input(page).evaluate((el) => {
       const style = getComputedStyle(el);
@@ -260,13 +272,13 @@ test.describe("contact terminal (desktop)", () => {
 test.describe("contact terminal (mobile, 360px)", () => {
   test.use({ viewport: { width: 360, height: 740 } });
 
-  test("opened from the drawer's contact.bash, completes with the active control in view", async ({ page }) => {
+  test("opened from the drawer's contact.me, completes with the active control in view", async ({ page }) => {
     await page.goto("/");
     await expect(body(page)).toBeHidden();
     await page.getByRole("button", { name: "Explorer", exact: true }).click();
     const drawer = page.getByRole("dialog", { name: "Explorer" });
     await drawer.getByRole("button", { name: "docs", exact: true }).click();
-    await drawer.getByRole("button", { name: /^contact\.bash/ }).click();
+    await drawer.getByRole("button", { name: /^contact\.me/ }).click();
 
     await expect(body(page)).toBeVisible();
     await expect(input(page)).toBeFocused();
@@ -313,7 +325,7 @@ test.describe("contact terminal (mobile, 360px)", () => {
     await page.getByRole("button", { name: "Explorer", exact: true }).click();
     const drawer = page.getByRole("dialog", { name: "Explorer" });
     await drawer.getByRole("button", { name: "docs", exact: true }).click();
-    await drawer.getByRole("button", { name: /^contact\.bash/ }).click();
+    await drawer.getByRole("button", { name: /^contact\.me/ }).click();
     await expect(input(page)).toBeFocused();
 
     await input(page).fill("Ada");
