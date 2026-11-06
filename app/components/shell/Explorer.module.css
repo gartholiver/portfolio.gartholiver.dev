@@ -130,32 +130,6 @@
   transform: rotate(90deg);
 }
 
-.dot {
-  flex: none;
-  width: 7px;
-  height: 7px;
-  border-radius: 2px;
-  background: var(--color-filetype-folder);
-}
-.dot[data-kind="md"] {
-  background: var(--color-filetype-md);
-}
-.dot[data-kind="html"] {
-  background: var(--color-filetype-html);
-}
-.dot[data-kind="json"] {
-  background: var(--color-filetype-json);
-}
-.dot[data-kind="tsx"] {
-  background: var(--color-filetype-tsx);
-}
-.dot[data-kind="bash"] {
-  background: var(--color-filetype-bash);
-}
-.dot[data-kind="default"] {
-  background: var(--color-text-muted);
-}
-
 /* Long filenames wrap instead of truncating, so they stay readable. */
 .label {
   min-width: 0;

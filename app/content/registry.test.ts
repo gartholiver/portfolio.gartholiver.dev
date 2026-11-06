@@ -216,7 +216,7 @@ describe("content registry", () => {
     expect(project.children.map((n) => n.name)).toEqual(["views", "README.md", "technical-requirements.md"]);
     const docs = tree[1]!;
     if (docs.type !== "folder") throw new Error("expected folder");
-    expect(docs.children.map((n) => n.name)).toEqual(["index.html", "about.html", "contact.bash"]);
+    expect(docs.children.map((n) => n.name)).toEqual(["index.html", "about.html", "contact.me"]);
 
     const countFiles = (nodes: ExplorerNode[]): number =>
       nodes.reduce((n, node) => n + (node.type === "file" ? 1 : countFiles(node.children)), 0);

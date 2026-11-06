@@ -37,7 +37,7 @@ test.describe("home", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Garth Oliver — Portfolio");
     await expect(main(page).getByText("[Placeholder] A short portfolio introduction")).toBeVisible();
     await expect(main(page).getByRole("heading", { name: "How to explore" })).toBeVisible();
-    await expect(main(page).getByText("contact.bash").first()).toBeVisible();
+    await expect(main(page).getByText("contact.me").first()).toBeVisible();
 
     for (const project of PROJECTS) {
       const link = main(page).getByRole("link", { name: project.title, exact: true });
@@ -66,8 +66,7 @@ test.describe("home", () => {
     const errors = collectErrors(page);
     await page.goto("/");
     const toggle = page.getByRole("region", { name: /terminal/i }).getByRole("button", { name: /terminal/i });
-    await toggle.click(); // collapse first so we can see it reopen
-    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false"); // collapsed on load
 
     const before = page.url();
     await main(page).getByRole("button", { name: "Open contact terminal" }).click();
@@ -255,7 +254,7 @@ test.describe("search", () => {
   });
 
   test("the contact entry is not a search result (it has no page)", async ({ page }) => {
-    await page.goto("/search?q=contact.bash");
+    await page.goto("/search?q=contact.me");
     await expect(main(page).getByRole("heading", { name: "No results" })).toBeVisible();
   });
 

@@ -104,16 +104,14 @@ test.describe("every explorer entry (1440px)", () => {
     });
   }
 
-  test("contact.bash opens the contact terminal without navigating, from a collapsed terminal", async ({ page }) => {
+  test("contact.me opens the contact terminal without navigating, from a collapsed terminal", async ({ page }) => {
     const action = entries.find(isActionEntry)!;
     await page.goto("/stack");
-    const toggle = page.getByRole("region", { name: /terminal/i }).getByRole("button", { name: /terminal/i });
-    await toggle.click();
     await expect(terminalBody(page)).toBeHidden();
 
     await revealInExplorer(page, action);
     const before = page.url();
-    await explorer(page).getByRole("button", { name: /^contact\.bash/ }).click();
+    await explorer(page).getByRole("button", { name: /^contact\.me/ }).click();
     expect(page.url()).toBe(before);
     await expect(terminalBody(page)).toBeVisible();
     await expect(page.locator("#contact-input")).toBeFocused();
@@ -275,7 +273,7 @@ test.describe("unknown URLs", () => {
     "/portfolio/nope",
     "/portfolio/hybrid-wp-react-intranet/views/nope",
     "/portfolio/hybrid-wp-react-intranet/views/office-booking-calendar/extra",
-    "/docs/contact", // contact.bash is an action, not a page
+    "/docs/contact", // contact.me is an action, not a page
     "/docs/about/more",
     "/stack.json",
     "/search/extra",
@@ -504,7 +502,7 @@ test.describe("reduced motion", () => {
 
     await page.getByRole("button", { name: "Explorer", exact: true }).click();
     await page.getByRole("button", { name: "docs", exact: true }).click();
-    await page.getByRole("button", { name: /^contact\.bash/ }).click();
+    await page.getByRole("button", { name: /^contact\.me/ }).click();
     await expect(terminalBody(page)).toBeVisible();
     result = await motion(page);
     expect(result).toMatchObject({ offenders: [], running: 0 });

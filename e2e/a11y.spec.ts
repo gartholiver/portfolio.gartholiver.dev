@@ -33,7 +33,7 @@ const input = (page: Page) => page.locator("#contact-input");
 const body = (page: Page) => page.locator("#terminal-body");
 const button = (page: Page, name: string) => body(page).getByRole("button", { name, exact: true });
 
-/** Open the contact terminal the way each layout does: it is already open on desktop; on mobile use the page's own button. */
+/** Open the contact terminal the way each layout does: it starts collapsed, so use the page's own button. */
 async function openTerminal(page: Page) {
   if (!(await body(page).isVisible())) {
     await page.getByRole("main").getByRole("button", { name: "Open contact terminal" }).click();
@@ -219,10 +219,11 @@ test.describe("axe: desktop shell states", () => {
     for (const name of ["docs", "headless-wp-educational-app", "legal-doc-wp-ordering-system", "multi-location-inventory-sales-system"]) {
       await explorer.getByRole("button", { name, exact: true }).click();
     }
-    await audit(page, "explorer expanded");
-    await page.getByRole("contentinfo").getByRole("button", { name: "Terminal" }).click();
     await expect(body(page)).toBeHidden();
-    await audit(page, "terminal collapsed");
+    await audit(page, "explorer expanded, terminal collapsed");
+    await page.getByRole("contentinfo").getByRole("button", { name: "Terminal" }).click();
+    await expect(body(page)).toBeVisible();
+    await audit(page, "terminal expanded");
   });
 });
 

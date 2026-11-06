@@ -64,17 +64,47 @@ describe("Explorer", () => {
     expect(within(explorer()).queryByRole("link", { name: /^about\.html/ })).toBeNull();
   });
 
+  it("shows a decorative file-type icon per row and swaps folder icons when expanded", () => {
+    setup("/stack");
+    const icon = (el: HTMLElement) => el.querySelector("svg[data-icon]");
+    const docs = within(explorer()).getByRole("button", { name: "docs" });
+    expect(icon(docs)).toHaveAttribute("data-icon", "folder-docs");
+    expect(icon(docs)).toHaveAttribute("data-open", "false");
+    expect(icon(docs)).toHaveAttribute("aria-hidden", "true");
+    const closedMarkup = icon(docs)!.innerHTML;
+    fireEvent.click(docs);
+    expect(icon(docs)).toHaveAttribute("data-open", "true");
+    expect(icon(docs)!.innerHTML).not.toBe(closedMarkup);
+    expect(icon(within(explorer()).getByRole("button", { name: "portfolio" }))).toHaveAttribute("data-icon", "folder");
+    expect(icon(within(explorer()).getByRole("link", { name: "package.json" }))).toHaveAttribute("data-icon", "npm");
+    expect(icon(within(explorer()).getByRole("button", { name: /contact\.me/ }))).toHaveAttribute("data-icon", "terminal");
+  });
+
+  it("uses the project icon for case-study folders directly under portfolio, open vs closed", () => {
+    setup("/portfolio/hybrid-wp-react-intranet");
+    const icon = (el: HTMLElement) => el.querySelector("svg[data-icon]");
+    const project = within(explorer()).getByRole("button", { name: "hybrid-wp-react-intranet" });
+    expect(project).toHaveAttribute("aria-expanded", "true");
+    expect(icon(project)).toHaveAttribute("data-icon", "folder-project");
+    expect(icon(project)).toHaveAttribute("data-open", "true");
+    const openMarkup = icon(project)!.innerHTML;
+    fireEvent.click(project);
+    expect(icon(project)).toHaveAttribute("data-open", "false");
+    expect(icon(project)!.innerHTML).not.toBe(openMarkup);
+    expect(icon(within(explorer()).getByRole("button", { name: "portfolio" }))).toHaveAttribute("data-icon", "folder");
+  });
+
   it("has no active file on the 404 page", () => {
     setup("/nope");
     expect(within(explorer()).queryByRole("link", { current: "page" })).toBeNull();
   });
 
-  it("contact.bash is a button that opens the terminal without navigating", () => {
+  it("contact.me is a button that opens the terminal without navigating", () => {
     setup("/stack");
     fireEvent.click(within(explorer()).getByRole("button", { name: "docs" }));
-    const contact = within(explorer()).getByRole("button", { name: /^contact\.bash/ });
+    const contact = within(explorer()).getByRole("button", { name: /^contact\.me/ });
     expect(contact.tagName).toBe("BUTTON");
-    expect(screen.getByTestId("probe")).toHaveTextContent("0:true");
+    expect(screen.getByTestId("probe")).toHaveTextContent("0:false");
     fireEvent.click(contact);
     expect(screen.getByTestId("probe")).toHaveTextContent("1:true");
     // still on the same page

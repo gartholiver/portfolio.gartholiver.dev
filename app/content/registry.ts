@@ -217,9 +217,9 @@ export const entries: readonly RegistryEntry[] = [
   {
     id: "docs:contact",
     kind: "contact-action",
-    label: "contact.bash",
+    label: "contact.me",
     title: "Contact",
-    explorerPath: "docs/contact.bash",
+    explorerPath: "docs/contact.me",
     url: null,
     action: "open-contact",
     tags: ["contact"],

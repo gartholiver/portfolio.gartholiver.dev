@@ -31,10 +31,10 @@ afterEach(() => {
 });
 
 describe("ShellProvider — terminal", () => {
-  it("is open by default on desktop and collapsed below 900px", () => {
+  it("is collapsed by default on desktop and below 900px", () => {
     mockViewport(false);
     const desktop = renderHook(() => useShell(), { wrapper });
-    expect(desktop.result.current.terminalOpen).toBe(true);
+    expect(desktop.result.current.terminalOpen).toBe(false);
     expect(desktop.result.current.terminalIsDefault).toBe(true);
     expect(desktop.result.current.isDrawerLayout).toBe(false);
 
@@ -56,13 +56,13 @@ describe("ShellProvider — terminal", () => {
     expect(result.current.terminalOpen).toBe(true);
   });
 
-  it("follows the viewport until the user chooses", () => {
+  it("stays collapsed across resizes until the user chooses", () => {
     const vp = mockViewport(false);
     const { result } = renderHook(() => useShell(), { wrapper });
     act(() => vp.resize(true));
     expect(result.current.terminalOpen).toBe(false);
     act(() => vp.resize(false));
-    expect(result.current.terminalOpen).toBe(true);
+    expect(result.current.terminalOpen).toBe(false);
   });
 
   it("openContact opens the terminal, requests focus each time, and closes the drawer", () => {

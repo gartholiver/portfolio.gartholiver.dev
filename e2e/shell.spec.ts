@@ -38,7 +38,10 @@ test.describe("desktop shell", () => {
     // Fixed panel sizes
     const box = async (loc: ReturnType<Page["locator"]>) => (await loc.boundingBox())!;
     expect((await box(page.locator("#explorer-drawer"))).width).toBeCloseTo(280, 0);
-    expect((await box(page.locator("#terminal-panel"))).height).toBeCloseTo(210, 0);
+    // the terminal starts collapsed (header bar only); opened it is 252px tall
+    await expect(page.locator("#terminal-body")).toBeHidden();
+    await page.getByRole("contentinfo").getByRole("button", { name: "Terminal" }).click();
+    expect((await box(page.locator("#terminal-panel"))).height).toBeCloseTo(252, 0);
     // page is pinned: the window never scrolls, <main> does
     expect(await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight)).toBe(true);
     expect(await page.getByRole("main").evaluate((m) => m.scrollHeight > m.clientHeight)).toBe(true);
@@ -127,20 +130,16 @@ test.describe("desktop shell", () => {
     await expect(explorer(page).locator('[aria-current="page"]')).toBeVisible();
   });
 
-  test("contact.bash opens and focuses the terminal without navigating", async ({ page }) => {
+  test("contact.me opens and focuses the terminal without navigating", async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto("/stack");
     const toggle = terminal(page).getByRole("button", { name: /terminal/i });
-    await expect(toggle).toHaveAttribute("aria-expanded", "true");
-
-    // collapse, then use the explorer entry
-    await toggle.click();
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
     await expect(page.locator("#terminal-body")).toBeHidden();
 
     await explorer(page).getByRole("button", { name: "docs", exact: true }).click();
     const before = page.url();
-    await explorer(page).getByRole("button", { name: /^contact\.bash/ }).click();
+    await explorer(page).getByRole("button", { name: /^contact\.me/ }).click();
     expect(page.url()).toBe(before);
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
     await expect(page.locator("#terminal-body")).toBeVisible();
@@ -155,15 +154,16 @@ test.describe("desktop shell", () => {
     expect(errors).toEqual([]);
   });
 
-  test("the status bar toggle collapses and expands the terminal", async ({ page }) => {
+  test("the status bar toggle expands and collapses the terminal (collapsed on load)", async ({ page }) => {
     await page.goto("/");
     const statusToggle = page.getByRole("contentinfo").getByRole("button", { name: "Terminal" });
-    await expect(statusToggle).toHaveAttribute("aria-expanded", "true");
-    await statusToggle.click();
     await expect(statusToggle).toHaveAttribute("aria-expanded", "false");
     await expect(page.locator("#terminal-body")).toBeHidden();
     await statusToggle.click();
+    await expect(statusToggle).toHaveAttribute("aria-expanded", "true");
     await expect(page.locator("#terminal-body")).toBeVisible();
+    await statusToggle.click();
+    await expect(page.locator("#terminal-body")).toBeHidden();
   });
 
   test("scrolling happens in the content panel: anchors scroll it, navigation resets it", async ({ page }) => {
@@ -235,7 +235,7 @@ test.describe("mobile drawer (360px)", () => {
     const drawer = page.getByRole("dialog", { name: "Explorer" });
     await drawer.getByRole("button", { name: "docs", exact: true }).click();
     const before = page.url();
-    await drawer.getByRole("button", { name: /^contact\.bash/ }).click();
+    await drawer.getByRole("button", { name: /^contact\.me/ }).click();
     expect(page.url()).toBe(before);
     await expect(drawer).toHaveCount(0); // no longer a dialog
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
@@ -367,7 +367,7 @@ test("keyboard-open sized viewport still shows the content (360x320)", async ({ 
   expect(main.height).toBeGreaterThan(120);
   await page.getByRole("button", { name: "Explorer", exact: true }).click();
   await page.getByRole("button", { name: "docs", exact: true }).click();
-  await page.getByRole("button", { name: /^contact\.bash/ }).click();
+  await page.getByRole("button", { name: /^contact\.me/ }).click();
   const m2 = (await page.getByRole("main").boundingBox())!;
   expect(m2.height).toBeGreaterThan(60);
   expect((await noHorizontalScroll(page)).doc).toBe(0);
@@ -411,6 +411,8 @@ test.describe("title bar and breadcrumbs", () => {
     await page.setViewportSize({ width: 360, height: 740 });
     expect(await visible(page, "portfolio")).toBe(true);
     expect(await visible(page, "views")).toBe(true);
+    // The breadcrumb bar sits under the tab row, so the file crumb stays visible on narrow screens too.
+    expect(await visible(page, "custom-woo-extension-plugin.html")).toBe(true);
     expect(await visible(page, "legal-doc-wp-ordering-system")).toBe(false);
     await expect(page.getByRole("navigation", { name: "Breadcrumb" }).getByText("…", { exact: true })).toBeVisible();
     // Full path still in the DOM / accessibility tree and as a title.

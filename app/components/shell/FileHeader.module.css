@@ -1,7 +1,14 @@
+/* Tab row on top, full-width breadcrumb bar underneath (VS Code layout). */
 .fileHeader {
   display: flex;
-  align-items: stretch;
+  flex-direction: column;
   flex: none;
+  min-width: 0;
+}
+
+.tabRow {
+  display: flex;
+  align-items: stretch;
   height: var(--size-fileheader);
   min-width: 0;
   background: var(--color-surface-0);
@@ -31,39 +38,19 @@
   text-overflow: ellipsis;
 }
 
-.dot {
-  flex: none;
-  width: 7px;
-  height: 7px;
-  border-radius: 2px;
-  background: var(--color-filetype-folder);
-}
-.dot[data-kind="md"] {
-  background: var(--color-filetype-md);
-}
-.dot[data-kind="html"] {
-  background: var(--color-filetype-html);
-}
-.dot[data-kind="json"] {
-  background: var(--color-filetype-json);
-}
-.dot[data-kind="tsx"] {
-  background: var(--color-filetype-tsx);
-}
-.dot[data-kind="bash"] {
-  background: var(--color-filetype-bash);
-}
-.dot[data-kind="default"] {
-  background: var(--color-text-muted);
-}
-
+/*
+ * Breadcrumb bar: quieter than the tab (smaller, muted, same surface as the content, no borders)
+ * so it doesn't read as another tab.
+ */
 .crumbs {
   display: flex;
   align-items: center;
-  flex: 1 1 0;
+  height: var(--size-breadcrumbs);
   min-width: 0;
   overflow: hidden;
   padding: 0 16px;
+  background: var(--color-surface-2);
+  font-size: 11.5px;
 }
 
 .crumbList {
@@ -79,6 +66,7 @@
 
 .crumb {
   display: inline-flex;
+  align-items: center;
   flex: 0 1 auto;
   min-width: 0;
 }
@@ -90,8 +78,12 @@
   flex-shrink: 20;
 }
 .crumb[data-last="true"] {
-  flex-shrink: 0;
+  flex-shrink: 1;
   max-width: 100%;
+}
+/* File icon before the file name (same icon as the tab and the explorer). */
+.crumbIcon {
+  margin-right: 6px;
 }
 /* Narrow-only "…" stand-in for the middle crumbs (decorative; the real crumbs stay in the DOM). */
 .crumb[data-ellipsis="true"] {
@@ -100,11 +92,12 @@
 .crumb + .crumb::before {
   content: "›" / "";
   flex: none;
-  margin: 0 8px;
+  margin: 0 6px;
+  opacity: 0.8;
 }
 .crumb[data-last="true"] .crumbLink,
 .crumb[data-last="true"] .crumbText {
-  color: var(--color-text-strong);
+  color: var(--color-text-explorer);
 }
 
 .crumbLink,
@@ -121,6 +114,10 @@
   color: var(--color-text-strong);
   text-decoration: underline;
 }
+.crumbLink:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
 
 @media (min-width: 600px) {
   /* Wide enough for the full path: only the middle folders truncate. */
@@ -131,30 +128,28 @@
 
 @media (max-width: 599.98px) {
   .file {
-    max-width: 45%;
+    max-width: 70%;
     padding: 10px 12px;
   }
   .crumbs {
     padding: 0 12px;
   }
-  .crumb[data-ellipsis="true"] {
-    display: inline-flex;
+  /* The visible folders (first, "…", last) stay whole; the file name truncates instead. */
+  .crumb:not([data-last="true"]) {
     flex-shrink: 0;
   }
-  /*
-   * Middle folders collapse into the "…" and the last crumb (the file) is already shown in the
-   * file cell: both stay in the DOM, visually hidden, for assistive tech.
-   */
-  .crumb[data-middle="true"],
-  .crumb[data-last="true"] {
+  .crumb[data-ellipsis="true"] {
+    display: inline-flex;
+  }
+  /* Middle folders collapse into the "…"; they stay in the DOM, visually hidden, for assistive tech. */
+  .crumb[data-middle="true"] {
     position: absolute;
     width: 1px;
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
   }
-  .crumb[data-middle="true"]::before,
-  .crumb[data-last="true"]::before {
+  .crumb[data-middle="true"]::before {
     content: none;
   }
 }

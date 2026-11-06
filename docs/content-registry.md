@@ -58,7 +58,7 @@ The formulas live in three exported helpers in `registry.ts`:
 | `portfolio/<project>/views/<slug>.html` | `view:<project>:<slug>` | `/portfolio/<project>/views/<slug>` | `view` (placeholder) or `demo` |
 | `docs/index.html` | `docs:blog` | `/docs` | `blog` |
 | `docs/about.html` | `docs:about` | `/docs/about` | `about` |
-| `docs/contact.bash` | `docs:contact` | none (opens the terminal) | `contact-action` |
+| `docs/contact.me` | `docs:contact` | none (opens the terminal) | `contact-action` |
 | `index.html` | `home` | `/` | `home` |
 | `package.json` | `stack` | `/stack` | `stack` |
 | `search.tsx` | `search` | `/search` | `search` |
